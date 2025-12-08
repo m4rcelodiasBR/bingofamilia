@@ -4,7 +4,9 @@ import jakarta.persistence.*;
 import lombok.Data;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Representa uma sessão de jogo de Bingo.
@@ -28,10 +30,24 @@ public class Partida {
 
     private LocalDateTime dataFim;
 
+    private Long duracaoEmSegundos;
+
     @ElementCollection
     @CollectionTable(name = "partida_numeros_sorteados", joinColumns = @JoinColumn(name = "partida_id"))
     @Column(name = "numero")
     private List<Integer> numerosSorteados = new ArrayList<>();
+
+    @ManyToMany
+    @JoinTable(
+            name = "partida_participantes",
+            joinColumns = @JoinColumn(name = "partida_id"),
+            inverseJoinColumns = @JoinColumn(name = "jogador_id")
+    )
+    private Set<Jogador> participantes = new HashSet<>();
+
+    @ManyToOne
+    @JoinColumn(name = "vencedor_id")
+    private Jogador vencedor;
 
     /**
      * Verifica se a partida está ativa.
