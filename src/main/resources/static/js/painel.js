@@ -10,7 +10,11 @@ const elGrid = document.getElementById('gridTV');
 const elMsg = document.getElementById('msgUltimo');
 
 let maxNumeros = 75;
-let intervaloShuffle = null; // Para controlar animação
+let intervaloShuffle = null; // Para controlar o loop visual
+
+// --- CONTROLE DE ESTADO DE ANIMAÇÃO ---
+let bloqueioAnimacao = false; // Impede que o resultado apareça instantaneamente
+let dadosPendentes = null;    // Guarda o resultado se ele chegar muito rápido
 
 document.addEventListener('DOMContentLoaded', () => {
     gerarGridVazio(maxNumeros);
@@ -23,12 +27,18 @@ channel.onmessage = (event) => {
 
     switch (dados.tipo) {
         case 'INICIO_SORTEIO':
-            iniciarAnimacaoEmbaralhar();
+            // Ao receber o comando de sortear, iniciamos a trava de tempo
+            tratarInicioSorteio();
             break;
 
         case 'ATUALIZACAO':
-            pararAnimacaoEmbaralhar(dados.ultimoNumero);
-            atualizarTela(dados);
+            // Se estivermos no meio da animação obrigatória, guardamos para depois
+            if (bloqueioAnimacao) {
+                console.log("Segurando resultado para suspense...");
+                dadosPendentes = dados;
+            } else {
+                aplicarAtualizacao(dados);
+            }
             break;
 
         case 'INICIO_DESEMPATE':
@@ -47,21 +57,50 @@ channel.onmessage = (event) => {
 
 // --- Funções Principais ---
 
+function tratarInicioSorteio() {
+    // 1. Inicia o visual
+    iniciarAnimacaoEmbaralhar();
+
+    // 2. Ativa o bloqueio para garantir o suspense
+    bloqueioAnimacao = true;
+    dadosPendentes = null; // Limpa dados antigos
+
+    // 3. Define o tempo mínimo de animação (ex: 2.5 segundos)
+    setTimeout(() => {
+        bloqueioAnimacao = false;
+
+        // Se o resultado chegou enquanto esperávamos, exibe agora
+        if (dadosPendentes) {
+            aplicarAtualizacao(dadosPendentes);
+            dadosPendentes = null;
+        }
+    }, 2500); // <-- AJUSTE AQUI O TEMPO DE SUSPENSE
+}
+
+function aplicarAtualizacao(dados) {
+    pararAnimacaoEmbaralhar(dados.ultimoNumero);
+    atualizarTela(dados);
+}
+
 function atualizarTela(dados) {
     const lista = dados.numerosSorteados || [];
     const ultimo = dados.ultimoNumero;
 
-    elContador.textContent = lista.length;
+    if(elContador) elContador.textContent = lista.length;
 
-    if (ultimo > maxNumeros) {
+    // Ajuste dinâmico para bingo de 90 bolas se necessário
+    if (ultimo > maxNumeros && maxNumeros === 75) {
         maxNumeros = 90;
         gerarGridVazio(maxNumeros);
+        // Remarca tudo pois o grid foi recriado
+        remarcarTudo(lista);
+    } else {
+        remarcarTudo(lista);
     }
-
-    remarcarTudo(lista);
 }
 
 function gerarGridVazio(total) {
+    if(!elGrid) return;
     elGrid.innerHTML = '';
     for (let i = 1; i <= total; i++) {
         const bola = document.createElement('div');
@@ -73,13 +112,17 @@ function gerarGridVazio(total) {
 }
 
 function remarcarTudo(lista) {
+    // Remove classe 'ultimo' anterior
     document.querySelectorAll('.numero-bola.ultimo').forEach(el => el.classList.remove('ultimo'));
+    // Remove classe 'marcado' para garantir consistência (opcional, mas seguro)
+    // document.querySelectorAll('.numero-bola.marcado').forEach(el => el.classList.remove('marcado'));
 
     lista.forEach((num, index) => {
         const bola = document.getElementById(`tv-bola-${num}`);
         if (bola) {
             bola.classList.add('marcado');
-            if (index === lista.length - 1) {
+            // Se for o último da lista, destaca
+            if (num === lista[lista.length-1]) { // Verifica se é realmente o último sorteado
                 bola.classList.add('ultimo');
             }
         }
@@ -91,40 +134,56 @@ function remarcarTudo(lista) {
 function iniciarAnimacaoEmbaralhar() {
     if (intervaloShuffle) clearInterval(intervaloShuffle);
 
-    elMsg.textContent = "Sorteando...";
-    elNumeroGigante.style.color = 'var(--text-secondary)'; // Cor neutra durante sorteio
+    if(elMsg) elMsg.textContent = "Sorteando...";
+    if(elNumeroGigante) {
+        elNumeroGigante.style.color = '#7f8c8d'; // Var ou cor fixa
+        elNumeroGigante.classList.add('embaralhando'); // Sugestão para CSS (blur)
+    }
 
     intervaloShuffle = setInterval(() => {
-        elNumeroGigante.textContent = Math.floor(Math.random() * 90) + 1;
+        if(elNumeroGigante) elNumeroGigante.textContent = Math.floor(Math.random() * maxNumeros) + 1;
     }, 80);
 }
 
 function pararAnimacaoEmbaralhar(numeroFinal) {
-    if (intervaloShuffle) clearInterval(intervaloShuffle);
-    intervaloShuffle = null;
+    if (intervaloShuffle) {
+        clearInterval(intervaloShuffle);
+        intervaloShuffle = null;
+    }
 
-    elNumeroGigante.textContent = numeroFinal;
-    elNumeroGigante.style.color = ''; // Volta cor original
-    elMsg.textContent = `Número ${numeroFinal}`;
+    if(elNumeroGigante) {
+        elNumeroGigante.textContent = numeroFinal;
+        elNumeroGigante.style.color = ''; // Volta cor original
+        elNumeroGigante.classList.remove('embaralhando');
+
+        // Efeito visual de "POP"
+        elNumeroGigante.style.transform = "scale(1.5)";
+        setTimeout(() => elNumeroGigante.style.transform = "scale(1)", 300);
+    }
+
+    if(elMsg) elMsg.textContent = `Número ${numeroFinal}`;
 }
 
 // --- Desempate e Vitória ---
 
 function prepararDesempate(jogadores) {
-    // Mostra overlay de desempate
     const overlay = document.getElementById('overlayDesempate');
     const container = document.getElementById('containerCardsDuelo');
 
+    if(!overlay || !container) return;
+
     container.innerHTML = '';
-    overlay.style.display = 'block';
+    overlay.style.display = 'block'; // Garante que a div apareça
+
+    // Forçar reflow/repaint se necessário, ou garantir z-index no CSS
 
     jogadores.forEach((jog, index) => {
         const card = document.createElement('div');
         card.className = 'card-duelo-tv';
-        // IDs únicos para atualizar depois
+        // Aumentei o tamanho da fonte no HTML injetado
         card.innerHTML = `
-            <h3>${jog.nome}</h3>
-            <div id="tv-duelo-num-${index}" class="duelo-numero">?</div>
+            <h3 style="font-size: 2rem;">${jog.nome}</h3> 
+            <div id="tv-duelo-num-${index}" class="duelo-numero" style="font-size: 4rem;">?</div>
         `;
         container.appendChild(card);
     });
@@ -132,24 +191,39 @@ function prepararDesempate(jogadores) {
 
 function animarCardDuelo(index, numero) {
     const el = document.getElementById(`tv-duelo-num-${index}`);
+    console.log(`Animando duelo para index ${index}, numero ${numero}, elemento encontrado:`, el); // Debug
+
     if (el) {
         let count = 0;
+        // Limpa intervalo anterior se existir (segurança)
+        if(el.dataset.intervalo) clearInterval(el.dataset.intervalo);
+
         const loop = setInterval(() => {
             el.textContent = Math.floor(Math.random() * 99) + 1;
+            el.style.color = '#999';
             count++;
-            if(count > 10) {
+            if(count > 15) { // Aumentei um pouco o tempo da animação do duelo
                 clearInterval(loop);
                 el.textContent = numero;
-                el.style.transform = "scale(1.2)";
+                el.style.color = '#000'; // Cor destaque
+                el.style.transform = "scale(1.3)";
+                el.style.transition = "transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)";
             }
-        }, 50);
+        }, 80);
+
+        // Guarda o ID do intervalo no elemento para poder limpar se necessário
+        el.dataset.intervalo = loop;
     }
 }
 
 function mostrarVitoria(nome) {
-    document.getElementById('overlayDesempate').style.display = 'none';
-    const overlay = document.getElementById('overlayVitoria');
+    const ovDesempate = document.getElementById('overlayDesempate');
+    const ovVitoria = document.getElementById('overlayVitoria');
     const txtNome = document.getElementById('nomeVencedorFinal');
-    txtNome.textContent = nome || "JOGADOR";
-    overlay.style.display = 'flex';
+
+    if(ovDesempate) ovDesempate.style.display = 'none';
+    if(ovVitoria && txtNome) {
+        txtNome.textContent = nome || "VENCEDOR";
+        ovVitoria.style.display = 'flex';
+    }
 }
