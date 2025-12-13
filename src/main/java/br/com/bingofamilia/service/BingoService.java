@@ -142,4 +142,19 @@ public class BingoService {
     public Integer sortearPedraMaior() {
         return secureRandom.nextInt(100) + 1;
     }
+
+    /**
+     * Calcula a letra da coluna (B, I, N, G, O) baseada no número e tipo de jogo.
+     * Bingo 75: 1-15, 16-30...
+     * Bingo 90: 1-18, 19-36... (Adaptado para caber em 5 colunas)
+     */
+    public String calcularLetra(int numero, TipoJogo tipoJogo) {
+        int tamanhoColuna = (tipoJogo == TipoJogo.BINGO_90) ? 18 : 15;
+        int indice = (numero - 1) / tamanhoColuna;
+        String[] letras = {"B", "I", "N", "G", "O"};
+        if (indice >= 0 && indice < letras.length) {
+            return letras[indice];
+        }
+        return "";
+    }
 }

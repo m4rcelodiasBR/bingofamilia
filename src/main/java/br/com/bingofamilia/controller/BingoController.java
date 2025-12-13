@@ -50,7 +50,14 @@ public class BingoController {
     public ResponseEntity<Map<String, Object>> sortear(@PathVariable Long id) {
         Integer numero = bingoService.realizarSorteio(id);
         Partida partida = bingoService.obterDadosPartida(id);
-        return ResponseEntity.ok(Map.of("ultimoNumero", numero, "partida", partida));
+        String letra = bingoService.calcularLetra(numero, partida.getTipoJogo());
+        Map<String, Object> resposta = Map.of(
+                "ultimoNumero", numero,
+                "letra", letra,
+                "textoNarracao", "Letra " + letra + ". Número " + numero,
+                "partida", partida
+        );
+        return ResponseEntity.ok(resposta);
     }
 
     @GetMapping("/partidas/{id}")
