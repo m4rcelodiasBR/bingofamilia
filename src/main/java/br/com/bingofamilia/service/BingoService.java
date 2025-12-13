@@ -20,6 +20,7 @@ public class BingoService {
     private final PartidaRepository partidaRepository;
     private final JogadorRepository jogadorRepository;
     private final SecureRandom secureRandom = new SecureRandom();
+    private static final int PONTOS_VITORIA = 3;
 
     public BingoService(PartidaRepository partidaRepository, JogadorRepository jogadorRepository) {
         this.partidaRepository = partidaRepository;
@@ -46,17 +47,21 @@ public class BingoService {
      * Inicia uma nova partida gravando o timestamp inicial.
      */
     @Transactional
-    public Partida iniciarNovaPartida(TipoJogo tipoJogo) {
+    public Partida iniciarNovaPartida(TipoJogo tipoJogo, List<Long> idsJogadoresParticipantes) {
         Partida partida = new Partida();
         partida.setTipoJogo(tipoJogo);
         partida.setDataInicio(LocalDateTime.now());
 
-        List<Jogador> jogadores = jogadorRepository.findAllById(idsJogadoresParticipantes);
-        if (jogadores.isEmpty()) {
-            throw new JogoException("É necessário selecionar pelo menos um participantes para a partida.");
-        }
-        partida.getParticipantes().addAll(jogadores);
+        if (idsJogadoresParticipantes != null && !idsJogadoresParticipantes.isEmpty()) {
+            List<Jogador> jogadores = jogadorRepository.findAllById(idsJogadoresParticipantes);
 
+            if (jogadores.isEmpty()) {
+                throw new JogoException("Nenhum jogador válido encontrado com os IDs fornecidos.");
+            }
+            partida.getParticipantes().addAll(jogadores);
+        } else {
+            throw new JogoException("É necessário selecionar pelo menos um jogador.");
+        }
         return partidaRepository.save(partida);
     }
 
@@ -132,5 +137,9 @@ public class BingoService {
         if (!partida.isEmAndamento()) {
             throw new JogoException("Esta partida já foi finalizada");
         }
+    }
+
+    public Integer sortearPedraMaior() {
+        return secureRandom.nextInt(100) + 1;
     }
 }

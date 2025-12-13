@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bingo - Tela da TV</title>
+  <link rel="stylesheet" href="../css/bootstrap.min.css">
+  <link rel="stylesheet" href="../css/style.css">
+  <style>
+    /* Ajustes específicos para TV */
+    body { overflow: hidden; } /* Evita barras de rolagem na TV */
+    .painel-container { height: 100vh; }
+    .titulo-painel { font-size: 2rem; letter-spacing: 2px; }
+
+    /* O último número sorteado deve ser ENORME */
+    .ultimo-sorteado-container {
+      background: linear-gradient(135deg, var(--bg-card), #f0f0f0);
+      border-right: 5px solid var(--primary-color);
+    }
+  </style>
+</head>
+<body class="bg-dark">
+
+<div class="container-fluid p-0">
+  <div class="row g-0 painel-container">
+
+    <div class="col-4 d-flex flex-column align-items-center justify-content-center ultimo-sorteado-container text-center">
+      <h2 class="text-uppercase text-muted mb-4">Número Sorteado</h2>
+
+      <div id="numeroGigante" class="numero-bingo-gigante">--</div>
+
+      <div id="msgUltimo" class="mt-4 h3 text-primary fade-in">Aguardando início...</div>
+    </div>
+
+    <div class="col-8 bg-body p-4 d-flex flex-column">
+      <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-2">
+        <h1 class="titulo-painel fw-bold text-uppercase">🎱 Bingo da Família</h1>
+        <div class="badge bg-success fs-4 px-4">Sorteados: <span id="contadorTV">0</span></div>
+      </div>
+
+      <div class="flex-grow-1">
+        <div id="gridTV" class="tabuleiro-grid">
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div id="overlayDesempate" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.95); z-index:5000; color:white;">
+  <div class="container h-100 d-flex flex-column justify-content-center">
+    <h1 class="text-center text-warning display-1 mb-5 fw-bold">⚔️ EMPATE! PEDRA MAIOR ⚔️</h1>
+    <div id="containerCardsDuelo" class="d-flex justify-content-center flex-wrap align-items-center gap-4">
+    </div>
+  </div>
+</div>
+
+<div id="overlayVitoria" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:9999; flex-direction:column; align-items:center; justify-content:center; color:#ffd700;">
+  <h1 class="display-3 text-white">O VENCEDOR É</h1>
+  <div id="nomeVencedorFinal" class="fw-bold" style="font-size: 6rem; text-shadow: 0 0 30px red;">--</div>
+  <div class="mt-4 text-white h2">🎉 PARABÉNS! 🎉</div>
+</div>
+
+<script src="../js/painel.js"></script>
+</body>
+</html>

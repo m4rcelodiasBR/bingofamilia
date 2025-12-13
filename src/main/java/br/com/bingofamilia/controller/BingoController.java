@@ -67,6 +67,11 @@ public class BingoController {
         Long vencedorId = payload.get("vencedorId");
         return ResponseEntity.ok(bingoService.finalizarPartidaComVencedor(id, vencedorId));
     }
+
+    @GetMapping("/sorteio-extra")
+    public ResponseEntity<Map<String, Integer>> sortearExtra() {
+        return ResponseEntity.ok(Map.of("numero", bingoService.sortearPedraMaior()));
+    }
 }
 
 // Record auxiliar para receber o JSON de criação (pode ficar no mesmo arquivo ou em um DTO separado)

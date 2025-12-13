@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bingo - Controlador</title>
+  <link rel="stylesheet" href="../css/bootstrap.min.css">
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+<nav class="navbar navbar-dark bg-primary mb-4">
+  <div class="container">
+    <span class="navbar-brand mb-0 h1">🎱 Painel do Controlador</span>
+    <a href="../index.html" class="btn btn-sm btn-light">Voltar ao Menu</a>
+  </div>
+</nav>
+
+<div class="container">
+  <div class="row g-4">
+
+    <div class="col-md-4">
+      <div class="card h-100">
+        <div class="card-header fw-bold">👥 Novo Jogador</div>
+        <div class="card-body">
+          <form id="formCadastroJogador">
+            <div class="mb-3">
+              <label for="nomeJogador" class="form-label">Nome</label>
+              <input type="text" class="form-control" id="nomeJogador" placeholder="Ex: Maria" required>
+            </div>
+            <button type="submit" class="btn btn-success w-100">Cadastrar</button>
+          </form>
+
+          <hr>
+
+          <h6 class="text-secondary">Jogadores Cadastrados</h6>
+          <div id="listaJogadoresDisplay" class="list-group overflow-auto" style="max-height: 300px;">
+            <div class="text-center text-muted mt-3">Carregando...</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-8">
+      <div class="card">
+        <div class="card-header fw-bold">⚙️ Configurar Nova Partida</div>
+        <div class="card-body">
+
+          <div class="mb-4">
+            <label class="form-label fw-bold">1. Tipo de Jogo</label>
+            <div class="btn-group w-100" role="group">
+              <input type="radio" class="btn-check" name="tipoJogo" id="bingo75" value="BINGO_75" checked>
+              <label class="btn btn-outline-primary" for="bingo75">Bingo 75</label>
+
+              <input type="radio" class="btn-check" name="tipoJogo" id="bingo90" value="BINGO_90">
+              <label class="btn btn-outline-primary" for="bingo90">Bingo 90</label>
+            </div>
+          </div>
+
+          <div class="mb-4">
+            <label class="form-label fw-bold">2. Selecionar Participantes</label>
+            <div class="d-flex justify-content-between mb-2">
+              <button type="button" class="btn btn-sm btn-outline-secondary" onclick="selecionarTodos(true)">Marcar Todos</button>
+              <button type="button" class="btn btn-sm btn-outline-secondary" onclick="selecionarTodos(false)">Desmarcar Todos</button>
+            </div>
+
+            <div id="areaSelecaoParticipantes" class="border p-3 rounded bg-light" style="max-height: 200px; overflow-y: auto;">
+              <span class="text-muted">Cadastre jogadores para aparecerem aqui.</span>
+            </div>
+          </div>
+
+          <button id="btnIniciar" class="btn btn-primary btn-lg w-100 py-3" onclick="iniciarPartida()">
+            🚀 INICIAR PARTIDA
+          </button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script src="../js/bootstrap.bundle.min.js"></script>
+<script src="../js/controlador.js"></script>
+</body>
+</html>

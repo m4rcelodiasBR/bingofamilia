@@ -1,0 +1,173 @@
+/* --- Definição de Variáveis e Temas --- */
+:root {
+    --bg-body: #f8f9fa;
+    --bg-card: #ffffff;
+    --text-primary: #212529;
+    --text-secondary: #6c757d;
+    --primary-color: #0d6efd;
+    --highlight-color: #ffc107; /* Amarelo para destaque de números */
+    --border-color: #dee2e6;
+    --shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+/* Tema Escuro */
+[data-theme="dark"] {
+    --bg-body: #121212;
+    --bg-card: #1e1e1e;
+    --text-primary: #e0e0e0;
+    --text-secondary: #a0a0a0;
+    --primary-color: #375a7f;
+    --highlight-color: #ffca2c;
+    --border-color: #444;
+    --shadow: 0 4px 6px rgba(0,0,0,0.5);
+}
+
+/* Tema Alto Contraste (Bom para idosos ou TV distante) */
+[data-theme="contrast"] {
+    --bg-body: #000000;
+    --bg-card: #000000;
+    --text-primary: #ffff00;
+    --text-secondary: #00ff00;
+    --primary-color: #ffffff;
+    --highlight-color: #ffffff;
+    --border-color: #ffffff;
+    --shadow: none;
+}
+
+/* --- Fontes Locais --- */
+@font-face {
+    font-family: 'Roboto';
+    src: url('../fonts/Roboto-Regular.ttf') format('truetype');
+    font-weight: 400;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Roboto';
+    src: url('../fonts/Roboto-Bold.ttf') format('truetype');
+    font-weight: 700;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'BingoNumbers';
+    src: url('../fonts/Oswald-Bold.ttf') format('truetype');
+    font-weight: 700;
+}
+
+/* --- Aplicação Global --- */
+body {
+    background-color: var(--bg-body);
+    color: var(--text-primary);
+    font-family: 'Roboto', sans-serif;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.card {
+    background-color: var(--bg-card);
+    border-color: var(--border-color);
+    box-shadow: var(--shadow);
+}
+
+/* Classe utilitária para o número gigante na TV */
+.numero-bingo-gigante {
+    font-family: 'BingoNumbers', sans-serif;
+    font-size: 15rem;
+    font-weight: bold;
+    color: var(--highlight-color);
+    line-height: 1;
+    text-shadow: 4px 4px 10px rgba(0,0,0,0.3);
+}
+
+/* --- Estilos da Tela de Jogo --- */
+
+/* O número gigante que acabou de sair */
+.numero-destaque {
+    font-size: 8rem;
+    font-weight: 800;
+    color: var(--primary-color);
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+}
+
+/* O Tabuleiro com todos os números */
+.tabuleiro-grid {
+    display: grid;
+    /* Cria colunas automáticas de acordo com o espaço (minimo 40px) */
+    grid-template-columns: repeat(auto-fill, minmax(45px, 1fr));
+    gap: 8px;
+}
+
+/* A bolinha do número no tabuleiro */
+.numero-bola {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    background-color: var(--bg-body);
+    border: 2px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    color: var(--text-secondary);
+    transition: all 0.3s ease;
+}
+
+/* Quando o número já saiu */
+.numero-bola.marcado {
+    background-color: var(--primary-color); /* Azul (ou a cor do tema) */
+    color: #fff;
+    border-color: var(--primary-color);
+    transform: scale(1.1); /* Um leve aumento para destacar */
+    box-shadow: 0 0 5px rgba(0,0,0,0.3);
+}
+
+/* Animação para o último sorteado no tabuleiro */
+.numero-bola.ultimo {
+    background-color: var(--highlight-color); /* Amarelo/Dourado */
+    color: #000;
+    border-color: var(--highlight-color);
+    animation: pulso 1s infinite;
+}
+
+@keyframes pulso {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.2); }
+    100% { transform: scale(1); }
+}
+
+/* --- Estilos Extras para TV e Duelo --- */
+
+/* Card do Jogador no Duelo (TV) */
+.card-duelo-tv {
+    background: #fff;
+    border-radius: 15px;
+    padding: 30px;
+    min-width: 250px;
+    text-align: center;
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+    color: #333; /* Texto preto dentro do card branco */
+}
+
+.card-duelo-tv h3 {
+    margin-bottom: 20px;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+/* O Número sorteado no duelo */
+.duelo-numero {
+    font-size: 5rem;
+    color: #dc3545; /* Vermelho */
+    font-weight: 800;
+    line-height: 1;
+}
+
+/* Animação suave para entrada */
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.card-duelo-tv {
+    animation: fadeInUp 0.5s ease-out;
+}
