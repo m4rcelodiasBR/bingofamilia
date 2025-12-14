@@ -6,6 +6,7 @@ import br.com.bingofamilia.domain.TipoJogo;
 import br.com.bingofamilia.exception.JogoException;
 import br.com.bingofamilia.repository.JogadorRepository;
 import br.com.bingofamilia.repository.PartidaRepository;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -13,6 +14,7 @@ import java.security.SecureRandom;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class BingoService {
@@ -27,25 +29,71 @@ public class BingoService {
         this.jogadorRepository = jogadorRepository;
     }
 
+    /**
+     * Cria ou Reativa jogador.
+     * Se o nome já existir e estiver inativo -> Reativa.
+     * Se já existir e estiver ativo -> Erro.
+     */
     @Transactional
     public Jogador criarJogador(String nome) {
         if (nome == null || nome.trim().isEmpty()) {
             throw new JogoException("Nome do jogador não pode ser vazio.");
         }
-        return jogadorRepository.save(new Jogador(nome.trim()));
+        String nomeLimpo = nome.trim();
+
+        Optional<Jogador> existente = jogadorRepository.findByNomeIgnoreCase(nomeLimpo);
+
+        if (existente.isPresent()) {
+            Jogador jog = existente.get();
+            if (jog.isAtivo()) {
+                throw new JogoException("Já existe um jogador ativo com o nome: " + nomeLimpo);
+            } else {
+                jog.setAtivo(true);
+                return jogadorRepository.save(jog);
+            }
+        }
+
+        return jogadorRepository.save(new Jogador(nomeLimpo));
+    }
+
+    /**
+     * Atualiza apenas o nome do jogador.
+     */
+    @Transactional
+    public Jogador atualizarJogador(Long id, String novoNome) {
+        if (novoNome == null || novoNome.trim().isEmpty()) throw new JogoException("Nome inválido");
+
+        Jogador jogador = jogadorRepository.findById(id)
+                .orElseThrow(() -> new JogoException("Jogador não encontrado"));
+
+        Optional<Jogador> outro = jogadorRepository.findByNomeIgnoreCase(novoNome.trim());
+        if (outro.isPresent() && !outro.get().getId().equals(id)) {
+            throw new JogoException("Este nome já está em uso por outro jogador.");
+        }
+
+        jogador.setNome(novoNome.trim());
+        return jogadorRepository.save(jogador);
+    }
+
+    /**
+     * Realiza a Exclusão Lógica (Soft Delete).
+     */
+    @Transactional
+    public void inativarJogador(Long id) {
+        Jogador jogador = jogadorRepository.findById(id)
+                .orElseThrow(() -> new JogoException("Jogador não encontrado"));
+        jogador.setAtivo(false);
+        jogadorRepository.save(jogador);
+    }
+
+    public List<Jogador> listarJogadoresAtivos() {
+        return jogadorRepository.findByAtivoTrueOrderByPontuacaoAcumuladaDesc();
     }
 
     public List<Jogador> listarRanking() {
         return jogadorRepository.findAllByOrderByPontuacaoAcumuladaDesc();
     }
 
-    public List<Jogador> listarTodosJogadores() {
-        return jogadorRepository.findAll();
-    }
-
-    /**
-     * Inicia uma nova partida gravando o timestamp inicial.
-     */
     @Transactional
     public Partida iniciarNovaPartida(TipoJogo tipoJogo, List<Long> idsJogadoresParticipantes) {
         Partida partida = new Partida();
@@ -54,32 +102,24 @@ public class BingoService {
 
         if (idsJogadoresParticipantes != null && !idsJogadoresParticipantes.isEmpty()) {
             List<Jogador> jogadores = jogadorRepository.findAllById(idsJogadoresParticipantes);
-
-            if (jogadores.isEmpty()) {
-                throw new JogoException("Nenhum jogador válido encontrado com os IDs fornecidos.");
-            }
+            if (jogadores.isEmpty()) throw new JogoException("Nenhum jogador encontrado.");
             partida.getParticipantes().addAll(jogadores);
         } else {
-            throw new JogoException("É necessário selecionar pelo menos um jogador.");
+            throw new JogoException("Selecione participantes.");
         }
         return partidaRepository.save(partida);
     }
 
-    /**
-     * Realiza o sorteio de um único número para uma partida específica.
-     * Garante que o número não seja repetido.
-     */
     @Transactional
     public Integer realizarSorteio(Long partidaId) {
         Partida partida = buscarPartidaPorId(partidaId);
-
         validarStatusPartida(partida);
 
         int maximo = (partida.getTipoJogo() == TipoJogo.BINGO_90) ? 90 : 75;
         List<Integer> sorteados = partida.getNumerosSorteados();
 
-        if (sorteados.size() > maximo) {
-            throw new JogoException("Todos os números já foram sorteados para este jogo");
+        if (sorteados.size() >= maximo) {
+            throw new JogoException("Todos os números já foram sorteados.");
         }
 
         int novoNumero;
@@ -88,14 +128,12 @@ public class BingoService {
         } while (sorteados.contains(novoNumero));
 
         partida.getNumerosSorteados().add(novoNumero);
-        partidaRepository.save(partida);
+        Partida salva = partidaRepository.save(partida);
 
-        return novoNumero;
+        List<Integer> listaAtualizada = salva.getNumerosSorteados();
+        return listaAtualizada.get(listaAtualizada.size() - 1);
     }
 
-    /**
-     * Finaliza a partida, define o vencedor e atribui pontuação.
-     */
     @Transactional
     public Partida finalizarPartidaComVencedor(Long partidaId, Long idVencedor) {
         Partida partida = buscarPartidaPorId(partidaId);
@@ -105,48 +143,50 @@ public class BingoService {
                 .orElseThrow(() -> new JogoException("Vencedor não encontrado."));
 
         if (!partida.getParticipantes().contains(vencedor)) {
-            throw new JogoException("O jogador selecionado não é um participante desta partida.");
+            throw new JogoException("O vencedor não participou desta partida.");
         }
 
         LocalDateTime agora = LocalDateTime.now();
         partida.setDataFim(agora);
-
-        long duracaoSegundos = Duration.between(partida.getDataInicio(), agora).getSeconds();
-        partida.setDuracaoEmSegundos(duracaoSegundos);
-
+        long duracao = Duration.between(partida.getDataInicio(), agora).getSeconds();
+        partida.setDuracaoEmSegundos(duracao);
         partida.setVencedor(vencedor);
-        vencedor.setPontuacaoAcumulada(vencedor.getPontuacaoAcumulada() + PONTOS_VITORIA);
 
+        vencedor.setPontuacaoAcumulada(vencedor.getPontuacaoAcumulada() + PONTOS_VITORIA);
         jogadorRepository.save(vencedor);
+
         return partidaRepository.save(partida);
     }
 
-    /**
-     * Busca os dados atuais da partida
-     */
-    public Partida obterDadosPartida(Long partidaId) {
-        return buscarPartidaPorId(partidaId);
+    public List<Partida> listarHistoricoPartidas() {
+        return partidaRepository.findAll(Sort.by(Sort.Direction.DESC, "dataInicio"));
     }
 
-    private Partida buscarPartidaPorId(Long partidaId) {
-        return partidaRepository.findById(partidaId)
-                .orElseThrow(() -> new JogoException("Partida não encontrada com o ID " + partidaId));
-    }
-
-    private void validarStatusPartida(Partida partida) {
-        if (!partida.isEmAndamento()) {
-            throw new JogoException("Esta partida já foi finalizada");
+    @Transactional
+    public void anularPartida(Long id) {
+        if (partidaRepository.existsById(id)) {
+            partidaRepository.deleteById(id);
         }
+    }
+
+    public Partida obterDadosPartida(Long id) {
+        return buscarPartidaPorId(id);
     }
 
     public Integer sortearPedraMaior() {
         return secureRandom.nextInt(100) + 1;
     }
 
+    private Partida buscarPartidaPorId(Long id) {
+        return partidaRepository.findById(id).orElseThrow(() -> new JogoException("Partida não encontrada: " + id));
+    }
+
+    private void validarStatusPartida(Partida p) {
+        if (!p.isEmAndamento()) throw new JogoException("Partida já finalizada.");
+    }
+
     /**
-     * Calcula a letra da coluna (B, I, N, G, O) baseada no número e tipo de jogo.
-     * Bingo 75: 1-15, 16-30...
-     * Bingo 90: 1-18, 19-36... (Adaptado para caber em 5 colunas)
+     * Calcula letra para o Frontend e Narração.
      */
     public String calcularLetra(int numero, TipoJogo tipoJogo) {
         int tamanhoColuna = (tipoJogo == TipoJogo.BINGO_90) ? 18 : 15;

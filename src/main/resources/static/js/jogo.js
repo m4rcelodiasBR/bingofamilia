@@ -1,7 +1,5 @@
 /**
- * Lógica da Tela de Jogo (Operador) - VERSÃO BLINDADA
- * - Resolve erro 'is not defined' expondo funções no window
- * - Logs detalhados para o cronômetro
+ * Lógica da Tela de Jogo (Operador)
  */
 
 const API_URL = '/api';
@@ -244,10 +242,14 @@ function atualizarDisplayDestaque(numero, letra) {
     document.getElementById('legendaNumero').textContent = `Sorteado: ${letra} - ${numero}`;
 }
 
-function abrirTelaTV() { window.open('painel.html', 'BingoTV', 'width=1280,height=720,menubar=no,toolbar=no'); }
-function enviarParaTV(payload) { channel.postMessage(payload); }
+function abrirTelaTV() {
+    window.open('painel.html', 'BingoTV', 'width=1280,height=720,menubar=no,toolbar=no');
+}
 
-// --- Desempate e Fim ---
+function enviarParaTV(payload) {
+    channel.postMessage(payload);
+}
+
 function encerrarPartida() {
     const modal = new bootstrap.Modal(document.getElementById('modalVencedor'));
     const lista = document.getElementById('listaPossiveisVencedores');
@@ -263,6 +265,28 @@ function encerrarPartida() {
         });
     }
     modal.show();
+}
+
+async function anularPartidaAtual() {
+    if (!confirm("⚠️ ATENÇÃO!\n\nIsso irá EXCLUIR esta partida permanentemente.\nNenhum vencedor será salvo.\n\nDeseja continuar?")) {
+        return;
+    }
+
+    try {
+        const response = await fetch(`${API_URL}/partidas/${ID_PARTIDA}`, {
+            method: 'DELETE'
+        });
+
+        if (response.ok) {
+            alert("Partida anulada e removida do histórico.");
+            window.location.href = 'controlador.html';
+        } else {
+            alert("Erro ao anular partida.");
+        }
+    } catch (e) {
+        console.error(e);
+        alert("Erro de conexão.");
+    }
 }
 
 function verificarEmpate() {
@@ -284,6 +308,7 @@ function iniciarModoDesempate() {
     });
     atualizarSelectFinal();
 }
+
 async function sortearPedraDuelo(idx, nome) {
     const resp = await fetch(`${API_URL}/sorteio-extra`);
     const data = await resp.json();
@@ -294,12 +319,17 @@ async function sortearPedraDuelo(idx, nome) {
     window.speechSynthesis.speak(msg);
     atualizarSelectFinal();
 }
+
 function atualizarSelectFinal() {
     const sel = document.getElementById('selectVencedorFinal');
     sel.innerHTML = '';
     empatados.forEach(p => { const o = document.createElement('option'); o.value=p.id; o.text=`${p.nome} (${p.pedra})`; sel.appendChild(o); });
 }
-function confirmarVitoriaFinal() { finalizarNoBackend(document.getElementById('selectVencedorFinal').value); }
+
+function confirmarVitoriaFinal() {
+    finalizarNoBackend(document.getElementById('selectVencedorFinal').value);
+}
+
 async function finalizarNoBackend(id) {
     const nome = dadosPartida.participantes.find(p=>p.id==id)?.nome;
     await fetch(`${API_URL}/partidas/${ID_PARTIDA}/finalizar`, {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({vencedorId:Number(id)})});
@@ -318,3 +348,4 @@ window.encerrarPartida = encerrarPartida;
 window.verificarEmpate = verificarEmpate;
 window.confirmarVitoriaFinal = confirmarVitoriaFinal;
 window.sortearPedraDuelo = sortearPedraDuelo;
+window.anularPartidaAtual = anularPartidaAtual;

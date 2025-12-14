@@ -26,9 +26,20 @@ public class BingoController {
         return ResponseEntity.ok(bingoService.criarJogador(payload.get("nome")));
     }
 
+    @PutMapping("/jogadores/{id}")
+    public ResponseEntity<Jogador> editarJogador(@PathVariable Long id, @RequestBody Map<String, String> payload) {
+        return ResponseEntity.ok(bingoService.atualizarJogador(id, payload.get("nome")));
+    }
+
+    @DeleteMapping("/jogadores/{id}")
+    public ResponseEntity<Void> excluirJogador(@PathVariable Long id) {
+        bingoService.inativarJogador(id);
+        return ResponseEntity.noContent().build();
+    }
+
     @GetMapping("/jogadores")
     public ResponseEntity<List<Jogador>> listarJogadores() {
-        return ResponseEntity.ok(bingoService.listarTodosJogadores());
+        return ResponseEntity.ok(bingoService.listarJogadoresAtivos());
     }
 
     @GetMapping("/ranking")
@@ -36,28 +47,35 @@ public class BingoController {
         return ResponseEntity.ok(bingoService.listarRanking());
     }
 
-    /**
-     * Cria partida.
-     * Espera JSON: { "tipo": "BINGO_75", "participantes": [1, 2, 5] }
-     */
+    @GetMapping("/partidas")
+    public ResponseEntity<List<Partida>> listarHistorico() {
+        return ResponseEntity.ok(bingoService.listarHistoricoPartidas());
+    }
+
+    @DeleteMapping("/partidas/{id}")
+    public ResponseEntity<Void> anularPartida(@PathVariable Long id) {
+        bingoService.anularPartida(id);
+        return ResponseEntity.noContent().build();
+    }
+
     @PostMapping("/partidas")
     public ResponseEntity<Partida> criarPartida(@RequestBody NovaPartidaRequest request) {
-        Partida partida = bingoService.iniciarNovaPartida(request.tipo(), request.participantes());
-        return ResponseEntity.ok(partida);
+        return ResponseEntity.ok(bingoService.iniciarNovaPartida(request.tipo(), request.participantes()));
     }
 
     @PostMapping("/partidas/{id}/sortear")
     public ResponseEntity<Map<String, Object>> sortear(@PathVariable Long id) {
         Integer numero = bingoService.realizarSorteio(id);
         Partida partida = bingoService.obterDadosPartida(id);
+
         String letra = bingoService.calcularLetra(numero, partida.getTipoJogo());
-        Map<String, Object> resposta = Map.of(
+
+        return ResponseEntity.ok(Map.of(
                 "ultimoNumero", numero,
-                "letra", letra,
+                "letra", letra, // Ex: "N"
                 "textoNarracao", "Letra " + letra + ". Número " + numero,
                 "partida", partida
-        );
-        return ResponseEntity.ok(resposta);
+        ));
     }
 
     @GetMapping("/partidas/{id}")
@@ -65,14 +83,9 @@ public class BingoController {
         return ResponseEntity.ok(bingoService.obterDadosPartida(id));
     }
 
-    /**
-     * Finaliza a partida.
-     * Espera JSON: { "vencedorId": 5 }
-     */
     @PostMapping("/partidas/{id}/finalizar")
     public ResponseEntity<Partida> finalizar(@PathVariable Long id, @RequestBody Map<String, Long> payload) {
-        Long vencedorId = payload.get("vencedorId");
-        return ResponseEntity.ok(bingoService.finalizarPartidaComVencedor(id, vencedorId));
+        return ResponseEntity.ok(bingoService.finalizarPartidaComVencedor(id, payload.get("vencedorId")));
     }
 
     @GetMapping("/sorteio-extra")
@@ -81,5 +94,4 @@ public class BingoController {
     }
 }
 
-// Record auxiliar para receber o JSON de criação (pode ficar no mesmo arquivo ou em um DTO separado)
 record NovaPartidaRequest(TipoJogo tipo, List<Long> participantes) {}
