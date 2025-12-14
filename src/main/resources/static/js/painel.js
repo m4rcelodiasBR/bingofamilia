@@ -12,36 +12,53 @@ let bloqueioAnimacao = false;
 let dadosPendentes = null;
 let intervaloShuffle = null;
 
+// Cronômetro
+let dataInicioPartida = null;
+let intervaloCronometro = null;
+
 document.addEventListener('DOMContentLoaded', () => {
     gerarColunasBingo(75);
+    // Avisa que estamos vivos!
+    console.log("📺 TV Aberta. Pedindo sync...");
+    channel.postMessage({ tipo: 'TV_CONECTADA' });
 });
 
 channel.onmessage = (event) => {
     const dados = event.data;
+    console.log("📩 TV recebeu:", dados.tipo, dados);
 
-    // Atualiza Max Numeros se necessário
+    // Atualiza Max Numeros
     if(dados.maxNumeros && dados.maxNumeros !== maxNumeros) {
         maxNumeros = dados.maxNumeros;
         gerarColunasBingo(maxNumeros);
     }
-    if (dados.partida) {
-        const novoMax = (dados.partida.tipoJogo === 'BINGO_90') ? 90 : 75;
-        if(novoMax !== maxNumeros) {
-            maxNumeros = novoMax;
-            gerarColunasBingo(maxNumeros);
+
+    // Tenta pegar a data de inicio de qualquer mensagem que tenha 'partida'
+    if (dados.partida && dados.partida.dataInicio) {
+        if (dados.partida.dataInicio !== dataInicioPartida) {
+            console.log("⏱ Data inicio recebida na TV:", dados.partida.dataInicio);
+            dataInicioPartida = dados.partida.dataInicio;
+            iniciarCronometro();
         }
     }
 
     switch (dados.tipo) {
-        case 'INICIO_SORTEIO':
-            tratarInicioSorteio();
-            break;
-        case 'ATUALIZACAO':
-            if (bloqueioAnimacao) {
-                dadosPendentes = dados;
-            } else {
+        case 'SYNC_INICIAL':
+            if(dados.partida) {
                 aplicarAtualizacao(dados);
+                if (dados.ultimoNumero) {
+                    const letra = dados.letra || calcularLetraFallback(dados.ultimoNumero);
+                    elLetraGigante.textContent = letra;
+                    elNumeroGigante.textContent = dados.ultimoNumero;
+                    elMsg.textContent = `Último: ${letra} - ${dados.ultimoNumero}`;
+                }
             }
+            break;
+
+        case 'INICIO_SORTEIO': tratarInicioSorteio(); break;
+        case 'ATUALIZACAO':
+            if (bloqueioAnimacao) dadosPendentes = dados;
+            else aplicarAtualizacao(dados);
             break;
         case 'INICIO_DESEMPATE': prepararDesempate(dados.jogadores); break;
         case 'ATUALIZA_DESEMPATE': animarCardDuelo(dados.index, dados.numero); break;
@@ -49,26 +66,53 @@ channel.onmessage = (event) => {
     }
 };
 
+function iniciarCronometro() {
+    if (intervaloCronometro) clearInterval(intervaloCronometro);
+    const elTempo = document.getElementById('tempoDecorrido');
+
+    const start = tratarData(dataInicioPartida);
+    if (!start) {
+        console.warn("⚠️ Data inválida para cronômetro TV");
+        return;
+    }
+
+    intervaloCronometro = setInterval(() => {
+        const now = new Date().getTime();
+        const diff = now - start;
+
+        if (diff < 0) {
+            if(elTempo) elTempo.innerText = "00:00";
+            return;
+        }
+
+        const totalSeconds = Math.floor(diff / 1000);
+        const minutes = Math.floor(totalSeconds / 60);
+        const seconds = totalSeconds % 60;
+
+        if(elTempo) elTempo.innerText = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+    }, 1000);
+}
+
+function tratarData(dataRaw) {
+    if(!dataRaw) return null;
+    if (Array.isArray(dataRaw)) {
+        return new Date(dataRaw[0], dataRaw[1]-1, dataRaw[2], dataRaw[3], dataRaw[4], dataRaw[5] || 0).getTime();
+    }
+    return new Date(dataRaw).getTime();
+}
+
+// --- CORE ---
 function gerarColunasBingo(total) {
     elGrid.innerHTML = '';
     const letras = ['B', 'I', 'N', 'G', 'O'];
     const porColuna = total / 5;
-
     letras.forEach((letra, index) => {
-        const colunaDiv = document.createElement('div');
-        colunaDiv.className = `coluna-bingo col-${letra.toLowerCase()}`;
-
-        const header = document.createElement('div');
-        header.className = 'cabecalho-letra';
-        header.textContent = letra;
-        colunaDiv.appendChild(header);
-
-        const corpo = document.createElement('div');
-        corpo.className = 'corpo-numeros';
-
+        const colDiv = document.createElement('div');
+        colDiv.className = `coluna-bingo col-${letra.toLowerCase()}`;
+        colDiv.innerHTML = `<div class="cabecalho-letra">${letra}</div><div class="corpo-numeros"></div>`;
+        const corpo = colDiv.querySelector('.corpo-numeros');
         const inicio = (index * porColuna) + 1;
         const fim = (index + 1) * porColuna;
-
         for(let i = inicio; i <= fim; i++) {
             const numDiv = document.createElement('div');
             numDiv.className = 'numero-grade';
@@ -76,8 +120,7 @@ function gerarColunasBingo(total) {
             numDiv.textContent = i;
             corpo.appendChild(numDiv);
         }
-        colunaDiv.appendChild(corpo);
-        elGrid.appendChild(colunaDiv);
+        elGrid.appendChild(colDiv);
     });
 }
 
@@ -85,49 +128,39 @@ function tratarInicioSorteio() {
     iniciarAnimacaoEmbaralhar();
     bloqueioAnimacao = true;
     dadosPendentes = null;
-
-    // CORREÇÃO AQUI: Não remove 'marcado', remove apenas 'ultimo'
     document.querySelectorAll('.numero-grade.ultimo').forEach(el => el.classList.remove('ultimo'));
-
-    // Opcional: Se quiser remover o "ultimo" marcado com cor diferente, mas manter ele marcado
-    // Apenas garante que visualmente ele pareça um numero marcado normal agora.
-
     setTimeout(() => {
         bloqueioAnimacao = false;
         if (dadosPendentes) {
             aplicarAtualizacao(dadosPendentes);
             dadosPendentes = null;
         }
-    }, 2500); // 2.5s de suspense
+    }, 2500);
 }
 
 function aplicarAtualizacao(dados) {
     const numero = dados.ultimoNumero;
+    if(!numero) return;
     const letra = dados.letra || calcularLetraFallback(numero);
 
-    pararAnimacaoEmbaralhar(numero, letra);
+    if(bloqueioAnimacao || dados.tipo === 'ATUALIZACAO') {
+        pararAnimacaoEmbaralhar(numero, letra);
+    }
 
     const lista = dados.numerosSorteados || [];
     if(elContador) elContador.innerText = lista.length;
-
-    // Garante limpeza de 'ultimo' anterior
     document.querySelectorAll('.numero-grade.ultimo').forEach(el => el.classList.remove('ultimo'));
-
-    // Marca todos os sorteados
     lista.forEach(n => {
         const el = document.getElementById(`bola-${n}`);
         if(el) el.classList.add('marcado');
     });
-
-    // Destaca o novo
     const elUltimo = document.getElementById(`bola-${numero}`);
     if(elUltimo) elUltimo.classList.add('marcado', 'ultimo');
 }
 
 function calcularLetraFallback(numero) {
     if(!numero) return "";
-    const colunas = maxNumeros === 90 ? 18 : 15;
-    const i = Math.floor((numero - 1) / colunas);
+    const i = Math.floor((numero - 1) / (maxNumeros === 90 ? 18 : 15));
     return ['B','I','N','G','O'][i] || "";
 }
 
@@ -136,7 +169,6 @@ function iniciarAnimacaoEmbaralhar() {
     elMsg.textContent = "SORTEANDO...";
     elLetraGigante.textContent = "";
     elNumeroGigante.style.color = '#555';
-
     intervaloShuffle = setInterval(() => {
         elNumeroGigante.textContent = Math.floor(Math.random() * maxNumeros) + 1;
     }, 80);
@@ -151,7 +183,6 @@ function pararAnimacaoEmbaralhar(numeroFinal, letraFinal) {
     elNumeroGigante.textContent = numeroFinal;
     elNumeroGigante.style.color = '';
     elMsg.textContent = `Sorteado: ${letraFinal} - ${numeroFinal}`;
-
     elNumeroGigante.animate([{ transform: 'scale(1)' }, { transform: 'scale(1.5)' }, { transform: 'scale(1)' }], { duration: 500 });
 }
 

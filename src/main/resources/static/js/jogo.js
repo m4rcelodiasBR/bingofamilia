@@ -1,3 +1,9 @@
+/**
+ * Lógica da Tela de Jogo (Operador) - VERSÃO BLINDADA
+ * - Resolve erro 'is not defined' expondo funções no window
+ * - Logs detalhados para o cronômetro
+ */
+
 const API_URL = '/api';
 const params = new URLSearchParams(window.location.search);
 const ID_PARTIDA = params.get('id');
@@ -8,6 +14,8 @@ let maxNumeros = 75;
 let empatados = [];
 let ultimaLetra = "";
 let ultimoNumero = "";
+let rankingVisivelTV = false;
+let intervaloCronometroAdmin = null;
 
 document.addEventListener('DOMContentLoaded', () => {
     if (!ID_PARTIDA) return alert('ID inválido');
@@ -15,18 +23,58 @@ document.addEventListener('DOMContentLoaded', () => {
     carregarDadosIniciais();
 });
 
+function abrirTelaRanking() {
+    window.open('ranking.html', 'RankingBingo', 'width=1000,height=800,menubar=no,toolbar=no,location=no');
+}
+
+// Escuta a TV pedindo dados
+channel.onmessage = (event) => {
+    if (event.data.tipo === 'TV_CONECTADA') {
+        console.log("📡 TV conectou. Enviando dados de sincronia...");
+        enviarSyncParaTV();
+    }
+};
+
 async function carregarDadosIniciais() {
     try {
         const response = await fetch(`${API_URL}/partidas/${ID_PARTIDA}`);
         if (!response.ok) throw new Error('Erro api');
         dadosPartida = await response.json();
 
+        console.log("📊 Dados da Partida carregados:", dadosPartida);
+
         maxNumeros = (dadosPartida.tipoJogo === 'BINGO_90') ? 90 : 75;
         gerarTabuleiroColunas(maxNumeros);
 
         const lista = dadosPartida.numerosSorteados || [];
         atualizarTabuleiro(lista);
+
+        // Cronômetro
+        if (dadosPartida.dataInicio) {
+            console.log("⏱ Iniciando cronômetro com data:", dadosPartida.dataInicio);
+            iniciarCronometroAdmin(dadosPartida.dataInicio);
+        } else {
+            console.warn("⚠️ Partida sem dataInicio! Cronômetro não vai rodar.");
+        }
+
+        enviarSyncParaTV();
+
     } catch (e) { console.error(e); }
+}
+
+function enviarSyncParaTV() {
+    if (!dadosPartida) return;
+    const ultimo = dadosPartida.numerosSorteados && dadosPartida.numerosSorteados.length > 0
+        ? dadosPartida.numerosSorteados[dadosPartida.numerosSorteados.length - 1]
+        : null;
+
+    channel.postMessage({
+        tipo: 'SYNC_INICIAL',
+        partida: dadosPartida, // Aqui vai a dataInicio para a TV
+        maxNumeros: maxNumeros,
+        ultimoNumero: ultimo,
+        letra: ultimo ? calcularLetraFallback(ultimo) : null
+    });
 }
 
 function gerarTabuleiroColunas(total) {
@@ -38,14 +86,8 @@ function gerarTabuleiroColunas(total) {
     letras.forEach((letra, index) => {
         const colDiv = document.createElement('div');
         colDiv.className = `coluna-admin col-${letra.toLowerCase()}`;
-
-        const header = document.createElement('div');
-        header.className = 'cabecalho-admin';
-        header.textContent = letra;
-        colDiv.appendChild(header);
-
-        const corpo = document.createElement('div');
-        corpo.className = 'corpo-admin';
+        colDiv.innerHTML = `<div class="cabecalho-admin">${letra}</div><div class="corpo-admin"></div>`;
+        const corpo = colDiv.querySelector('.corpo-admin');
 
         const inicio = (index * porColuna) + 1;
         const fim = (index + 1) * porColuna;
@@ -57,7 +99,6 @@ function gerarTabuleiroColunas(total) {
             bola.textContent = i;
             corpo.appendChild(bola);
         }
-        colDiv.appendChild(corpo);
         grid.appendChild(colDiv);
     });
 }
@@ -67,7 +108,6 @@ async function realizarSorteio() {
     btn.disabled = true;
 
     try {
-        // Dispara animação na TV (2.5s)
         enviarParaTV({ tipo: 'INICIO_SORTEIO', maxNumeros: maxNumeros });
 
         const response = await fetch(`${API_URL}/partidas/${ID_PARTIDA}/sortear`, { method: 'POST' });
@@ -76,12 +116,7 @@ async function realizarSorteio() {
             const numeroFinal = data.ultimoNumero;
             const letra = data.letra || calcularLetraFallback(numeroFinal);
 
-            // Inicia animação local sincronizada
             animarDisplayAdmin(document.getElementById('numeroSorteado'), () => {
-
-                // --- PÓS ANIMAÇÃO (aprox 2.5s depois) ---
-
-                // Atualiza dados e tabuleiro
                 if(data.partida) dadosPartida = data.partida;
                 else {
                     if(!dadosPartida.numerosSorteados) dadosPartida.numerosSorteados = [];
@@ -91,7 +126,6 @@ async function realizarSorteio() {
                 atualizarTabuleiro(dadosPartida.numerosSorteados);
                 atualizarDisplayDestaque(numeroFinal, letra);
 
-                // Envia dados finais para TV (revela o número)
                 enviarParaTV({
                     tipo: 'ATUALIZACAO',
                     ultimoNumero: numeroFinal,
@@ -100,12 +134,9 @@ async function realizarSorteio() {
                     partida: dadosPartida
                 });
 
-                // Narração com pausa dramática
                 falarComPausa(letra, numeroFinal);
-
                 btn.disabled = false;
             });
-
         } else {
             const erro = await response.json();
             if (erro.message && erro.message.toLowerCase().includes("todos")) {
@@ -116,55 +147,82 @@ async function realizarSorteio() {
     } catch (e) { console.error(e); btn.disabled = false; }
 }
 
-// Animação ajustada para durar ~2.5 segundos (igual TV)
+function iniciarCronometroAdmin(dataInicioRaw) {
+    if (intervaloCronometroAdmin) clearInterval(intervaloCronometroAdmin);
+    const elTempo = document.getElementById('tempoDecorridoAdmin');
+
+    // Log para depurar o que está vindo do backend
+    console.log("Recebido dataInicio para cronômetro:", dataInicioRaw);
+
+    const start = tratarData(dataInicioRaw);
+    if (!start) {
+        console.warn("Data inválida ou nula. Cronômetro parado.");
+        return;
+    }
+
+    intervaloCronometroAdmin = setInterval(() => {
+        const now = new Date().getTime();
+        const diff = now - start;
+
+        if (diff < 0) { elTempo.innerText = "00:00"; return; }
+
+        const totalSeconds = Math.floor(diff / 1000);
+        const minutes = Math.floor(totalSeconds / 60);
+        const seconds = totalSeconds % 60;
+
+        elTempo.innerText = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+    }, 1000);
+}
+
+// --- UTILITÁRIOS ---
+function tratarData(dataRaw) {
+    if (!dataRaw) return null;
+    if (Array.isArray(dataRaw)) {
+        const ano = dataRaw[0];
+        const mes = dataRaw[1] - 1;
+        const dia = dataRaw[2];
+        const hora = dataRaw[3] || 0;
+        const min = dataRaw[4] || 0;
+        const seg = dataRaw[5] || 0;
+        return new Date(ano, mes, dia, hora, min, seg).getTime();
+    }
+    return new Date(dataRaw).getTime();
+}
+
 function animarDisplayAdmin(elemento, callback) {
     let count = 0;
-    const maxLoops = 50; // 50 * 50ms = 2500ms
     const loop = setInterval(() => {
         elemento.textContent = Math.floor(Math.random() * maxNumeros) + 1;
         count++;
-        if(count >= maxLoops) {
+        if(count >= 50) {
             clearInterval(loop);
             if(callback) callback();
         }
     }, 50);
 }
 
-// Nova função de voz com pausa
 function falarComPausa(letra, numero) {
     if ('speechSynthesis' in window) {
         window.speechSynthesis.cancel();
-
         ultimaLetra = letra;
         ultimoNumero = numero;
-
-        // 1. Fala a Letra
         const msgLetra = new SpeechSynthesisUtterance(`Letra... ${letra}`);
         msgLetra.lang = 'pt-BR';
-        msgLetra.rate = 1.0;
-
-        // 2. Quando terminar a letra, espera um pouco e fala o número
         msgLetra.onend = () => {
             setTimeout(() => {
                 const msgNum = new SpeechSynthesisUtterance(`Número... ${numero}`);
                 msgNum.lang = 'pt-BR';
-                msgNum.rate = 1.0;
                 window.speechSynthesis.speak(msgNum);
-            }, 800); // 800ms de silêncio
+            }, 800);
         };
-
         window.speechSynthesis.speak(msgLetra);
     }
 }
-
-function repetirUltimaFala() {
-    if (ultimaLetra && ultimoNumero) falarComPausa(ultimaLetra, ultimoNumero);
-}
+function repetirUltimaFala() { if(ultimaLetra && ultimoNumero) falarComPausa(ultimaLetra, ultimoNumero); }
 
 function calcularLetraFallback(numero) {
     if(!numero) return "";
-    const colunas = maxNumeros === 90 ? 18 : 15;
-    const i = Math.floor((numero - 1) / colunas);
+    const i = Math.floor((numero - 1) / (maxNumeros === 90 ? 18 : 15));
     return ['B','I','N','G','O'][i] || "";
 }
 
@@ -186,10 +244,10 @@ function atualizarDisplayDestaque(numero, letra) {
     document.getElementById('legendaNumero').textContent = `Sorteado: ${letra} - ${numero}`;
 }
 
-// Funções de Utilitários e Desempate (Mantidas do original)
 function abrirTelaTV() { window.open('painel.html', 'BingoTV', 'width=1280,height=720,menubar=no,toolbar=no'); }
 function enviarParaTV(payload) { channel.postMessage(payload); }
 
+// --- Desempate e Fim ---
 function encerrarPartida() {
     const modal = new bootstrap.Modal(document.getElementById('modalVencedor'));
     const lista = document.getElementById('listaPossiveisVencedores');
@@ -232,7 +290,6 @@ async function sortearPedraDuelo(idx, nome) {
     empatados[idx].pedra = data.numero;
     document.getElementById(`res-${idx}`).textContent = data.numero;
     enviarParaTV({tipo: 'ATUALIZA_DESEMPATE', index: idx, numero: data.numero});
-    // Voz no duelo pode ser direta
     const msg = new SpeechSynthesisUtterance(`Número ${data.numero}`);
     window.speechSynthesis.speak(msg);
     atualizarSelectFinal();
@@ -249,3 +306,15 @@ async function finalizarNoBackend(id) {
     enviarParaTV({tipo:'VITORIA_FINAL', vencedor:nome});
     alert('Fim de Jogo!'); window.location.href='../index.html';
 }
+
+// =======================================================
+// CORREÇÃO DEFINITIVA: Expor funções para o HTML (onclick)
+// =======================================================
+window.realizarSorteio = realizarSorteio;
+window.repetirUltimaFala = repetirUltimaFala;
+window.abrirTelaTV = abrirTelaTV;
+window.abrirTelaRanking = abrirTelaRanking;
+window.encerrarPartida = encerrarPartida;
+window.verificarEmpate = verificarEmpate;
+window.confirmarVitoriaFinal = confirmarVitoriaFinal;
+window.sortearPedraDuelo = sortearPedraDuelo;
