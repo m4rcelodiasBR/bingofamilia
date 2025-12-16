@@ -6,6 +6,8 @@
   <title>Bingo - Controlador</title>
   <link rel="stylesheet" href="../css/bootstrap.min.css">
   <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="../css/all.min.css">
+  <link rel="stylesheet" href="../css/themes.css">
   <style>
     .tabela-container {
       max-height: 400px;
@@ -22,34 +24,35 @@
 <body>
 <nav class="navbar navbar-dark bg-primary mb-4 shadow">
   <div class="container">
-    <span class="navbar-brand mb-0 h1">🎱 Painel do Controlador</span>
-    <a href="historico.html" class="btn btn-sm btn-outline-light me-2">Histórico</a>
-    <a href="../index.html" class="btn btn-sm btn-light fw-bold">Voltar</a>
+    <div>
+      <img src="../img/bingo_logo.png" width="70" alt="Logo Bingo da Família">
+      <span class="navbar-brand mb-0 h1 text-start titulo-index text-uppercase ps-2">Painel do Controlador</span>
+    </div>
+    <div>
+      <a href="ranking.html" class="btn btn-sm btn-outline-light me-2" target="_blank">Ranking</a>
+      <a href="historico.html" class="btn btn-sm btn-outline-light me-2">Histórico</a>
+      <a href="../index.html" class="btn btn-sm btn-outline-light me-2">Voltar</a>
+    </div>
   </div>
 </nav>
-
 <div class="container">
   <div class="row g-4">
-
     <div class="col-md-5">
       <div class="card h-100 shadow-sm">
-        <div class="card-header fw-bold bg-white text-primary border-bottom-0">
-          👥 Gestão de Jogadores
+        <div class="card-header fw-bold border-bottom-0">
+          <i class="fa-solid fa-users pe-2"></i>
+          Gestão de Jogadores
         </div>
         <div class="card-body">
-
           <form id="formCadastroJogador" class="mb-4">
-            <label for="nomeJogador" class="form-label small text-muted">Novo Jogador</label>
+            <label for="nomeJogador" class="form-label small">Novo Jogador</label>
             <div class="input-group">
               <input type="text" class="form-control" id="nomeJogador" placeholder="Nome ex: Maria" required autocomplete="off">
               <button type="submit" class="btn btn-success">Cadastrar</button>
             </div>
           </form>
-
           <hr class="text-secondary">
-
           <h6 class="text-secondary mb-3">Jogadores Cadastrados</h6>
-
           <div class="tabela-container">
             <table class="table table-striped table-hover align-middle mb-0">
               <thead class="table-light sticky-top">
@@ -64,65 +67,69 @@
               </tbody>
             </table>
           </div>
-
         </div>
       </div>
     </div>
-
     <div class="col-md-7">
-      <div class="card shadow-sm border-primary h-100">
-        <div class="card-header fw-bold bg-primary text-white">
-          ⚙️ Configurar Nova Partida
+      <div class="card shadow-sm h-100">
+        <div class="card-header fw-bold border-bottom-0">
+          <i class="fa-solid fa-gear pe-2"></i>
+          Configurar Nova Partida
         </div>
         <div class="card-body d-flex flex-column justify-content-between">
-
           <div>
             <div class="mb-4">
-              <label class="form-label fw-bold">1. Tipo de Jogo</label>
-              <div class="bg-light p-3 rounded border">
+              <label class="form-label fw-bold">
+                <span class="text-tertiary">
+                  <i class="fa-regular fa-circle-1 pe-2"></i>
+                </span>
+                Tipo de Jogo
+              </label>
+              <div class="bg-players p-3 rounded border">
                 <div class="btn-group w-100" role="group">
                   <input type="radio" class="btn-check" name="tipoJogo" id="bingo75" value="BINGO_75" checked>
-                  <label class="btn btn-outline-primary" for="bingo75">Bingo 75</label>
-
+                  <label class="btn btn-outline-light" for="bingo75">Bingo 75</label>
                   <input type="radio" class="btn-check" name="tipoJogo" id="bingo90" value="BINGO_90">
-                  <label class="btn btn-outline-primary" for="bingo90">Bingo 90</label>
+                  <label class="btn btn-outline-light" for="bingo90">Bingo 90</label>
                 </div>
               </div>
             </div>
-
+            <hr>
             <div class="mb-4">
-              <label class="form-label fw-bold">2. Quem vai jogar?</label>
+              <label class="form-label fw-bold">
+                <span class="text-tertiary">
+                  <i class="fa-regular fa-circle-2 pe-2"></i>
+                </span>
+                Quem vai jogar?
+              </label>
               <div class="d-flex justify-content-between mb-2">
                 <button type="button" class="btn btn-sm btn-outline-secondary" onclick="selecionarTodos(true)">Marcar Todos</button>
                 <button type="button" class="btn btn-sm btn-outline-secondary" onclick="selecionarTodos(false)">Desmarcar Todos</button>
               </div>
-
-              <div id="areaSelecaoParticipantes" class="border p-3 rounded bg-white" style="max-height: 250px; overflow-y: auto;">
+              <div id="areaSelecaoParticipantes" class="border p-3 rounded bg-players" style="max-height: 250px; overflow-y: auto;">
                 <span class="text-muted small">Cadastre jogadores ao lado para aparecerem aqui.</span>
               </div>
             </div>
           </div>
-
           <button id="btnIniciar" class="btn btn-primary btn-lg w-100 py-3 shadow fw-bold" onclick="iniciarPartida()">
-            🚀 INICIAR PARTIDA
+            <i class="fa-regular fa-ball-pile pe-2"></i>
+            INICIAR PARTIDA
           </button>
         </div>
       </div>
     </div>
-
   </div>
 </div>
-
 <div class="modal fade" id="modalEditar" tabindex="-1">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
-      <div class="modal-header bg-warning bg-opacity-25">
-        <h5 class="modal-title">✏️ Editar Jogador</h5>
+      <div class="modal-header">
+        <h5 class="modal-title">Editar Jogador</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
       <div class="modal-body">
         <input type="hidden" id="editIdJogador">
-        <label for="editNomeJogador" class="form-label">Novo Nome</label>
+        <label for="editNomeJogador" class="form-label small">Digite o novo nome</label>
         <input type="text" class="form-control" id="editNomeJogador" required>
       </div>
       <div class="modal-footer">
@@ -132,12 +139,14 @@
     </div>
   </div>
 </div>
-
 <div class="modal fade" id="modalExcluir" tabindex="-1">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
       <div class="modal-header bg-danger text-white">
-        <h5 class="modal-title">🗑️ Excluir Jogador</h5>
+        <h5 class="modal-title">
+          <i class="fa-regular fa-trash-can pe-2"></i>
+          Excluir Jogador
+        </h5>
         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
       </div>
       <div class="modal-body text-center py-4">
@@ -152,8 +161,8 @@
     </div>
   </div>
 </div>
-
 <script src="../js/bootstrap.bundle.min.js"></script>
 <script src="../js/controlador.js"></script>
+<script src="../js/theme-switcher.js"></script>
 </body>
 </html>

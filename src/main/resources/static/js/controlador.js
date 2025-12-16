@@ -58,14 +58,14 @@ async function carregarJogadores() {
 function adicionarLinhaTabela(jogador, tbody) {
     const tr = document.createElement('tr');
     tr.innerHTML = `
-        <td class="ps-3 fw-bold text-dark">${jogador.nome}</td>
-        <td class="text-center"><span class="badge bg-secondary rounded-pill">${jogador.pontuacaoAcumulada}</span></td>
+        <td class="ps-3 fw-bold text-players">${jogador.nome}</td>
+        <td class="text-center"><span class="badge bg-light text-dark rounded-pill">${jogador.pontuacaoAcumulada}</span></td>
         <td class="text-end pe-3">
-            <button class="btn btn-outline-warning btn-sm btn-acao me-1" onclick="abrirModalEditar(${jogador.id}, '${jogador.nome}')" title="Editar">
-                ✏️
+            <button class="btn btn-warning btn-sm btn-acao me-1" onclick="abrirModalEditar(${jogador.id}, '${jogador.nome}')" title="Editar">
+                <i class="fa-solid fa-pen-to-square"></i>
             </button>
-            <button class="btn btn-outline-danger btn-sm btn-acao" onclick="abrirModalExcluir(${jogador.id})" title="Excluir">
-                🗑️
+            <button class="btn btn-danger btn-sm btn-acao" onclick="abrirModalExcluir(${jogador.id})" title="Excluir">
+                <i class="fa-regular fa-trash-can"></i>
             </button>
         </td>
     `;
@@ -79,7 +79,7 @@ function adicionarCheckboxSelecao(jogador, container) {
         <input class="form-check-input check-participante" type="checkbox" value="${jogador.id}" id="check_jog_${jogador.id}">
         <label class="form-check-label d-flex justify-content-between pe-3" for="check_jog_${jogador.id}">
             <span>${jogador.nome}</span>
-            <span class="badge bg-light text-dark border">${jogador.pontuacaoAcumulada} pts</span>
+            <span class="badge bg-warning text-dark">${jogador.pontuacaoAcumulada} pts</span>
         </label>
     `;
     container.appendChild(div);

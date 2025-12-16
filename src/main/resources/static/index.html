@@ -3,58 +3,43 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bingo FullStack - Menu</title>
-
+    <title>Bingo da Família SILVA</title>
     <link rel="stylesheet" href="css/bootstrap.min.css">
     <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/all.min.css">
+    <link rel="stylesheet" href="css/themes.css">
 </head>
 <body>
-
 <div class="container d-flex flex-column align-items-center justify-content-center vh-100">
-
     <div class="card p-5 text-center" style="max-width: 600px; width: 100%;">
-        <h1 class="mb-4">🎱 Bingo System</h1>
-
+        <img class="mx-auto mb-2" src="/img/bingo_logo.png" width="200" alt="Bingo da Familia Logo">
+        <h1 class="my-4 titulo-index">Bingo da Família SILVA</h1>
         <p class="text-secondary mb-4">Bem-vindo ao sistema de gerenciamento de Bingo.</p>
-
         <div class="d-grid gap-3">
             <a href="pages/controlador.html" class="btn btn-primary btn-lg">
-                🖥️ Acessar Controlador (Admin)
+                <i class="fa-regular fa-desktop pe-2"></i>
+                Acessar Gerenciador (Admin)
             </a>
             <a href="pages/painel.html" class="btn btn-outline-secondary btn-lg">
-                📺 Abrir Tela de Exibição (TV)
-            </a>
-            <a href="pages/cadastro.html" class="btn btn-outline-info">
-                👥 Cadastrar Jogadores
+                <i class="fa-regular fa-tv-retro pe-2"></i>
+                Acessar Painel (TV)
             </a>
         </div>
-
         <hr class="my-4">
-
-        <div class="d-flex justify-content-center gap-2">
-            <span>Tema:</span>
-            <button class="btn btn-sm btn-light border" onclick="mudarTema('light')">☀️</button>
-            <button class="btn btn-sm btn-dark" onclick="mudarTema('dark')">🌙</button>
-            <button class="btn btn-sm btn-warning" onclick="mudarTema('contrast')">👁️</button>
+        <div class="btn-group shadow-sm">
+            <button class="btn btn-outline-secondary btn-sm" onclick="mudarTema('default')" title="Tema Padrão">
+                <i class="fa-solid fa-palette"></i>
+            </button>
+            <button class="btn btn-outline-secondary btn-sm" onclick="mudarTema('light')" title="Tema Claro">
+                <i class="fa-solid fa-sun"></i>
+            </button>
+            <button class="btn btn-outline-secondary btn-sm" onclick="mudarTema('dark')" title="Tema Escuro">
+                <i class="fa-solid fa-moon"></i>
+            </button>
         </div>
     </div>
-
 </div>
-
 <script src="js/bootstrap.bundle.min.js"></script>
-
-<script>
-    function mudarTema(tema) {
-        if (tema === 'light') {
-            document.body.removeAttribute('data-theme');
-        } else {
-            document.body.setAttribute('data-theme', tema);
-        }
-        localStorage.setItem('bingo-tema', tema);
-    }
-
-    const temaSalvo = localStorage.getItem('bingo-tema');
-    if (temaSalvo) mudarTema(temaSalvo);
-</script>
+<script src="js/theme-switcher.js"></script>
 </body>
 </html>

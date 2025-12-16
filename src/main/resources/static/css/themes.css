@@ -1,0 +1,143 @@
+/* =========================================
+   DEFINIÇÃO DE VARIÁVEIS DE TEMA (CSS VARS)
+   ========================================= */
+
+/* 1. TEMA PADRÃO (Moderno/Roxo Vibrante) */
+:root {
+    --bg-body: #090c2d;
+    --bg-card: #0e2f59;
+    --bg-card-border: #1a5660;
+    --bg-form: #090c2d;
+
+    /* Textos */
+    --text-primary: #ffffff;
+    --text-secondary: #cbd5df;
+    --text-tertiary: #f2cf66;
+    --text-muted: #1a5660;
+    --primary-color: #f2cf66;
+
+    /* Botões */
+    --btn-outline-light-bg: #0e2f59;
+    --btn-outline-light-color: #cbd5df;
+
+    /* Cards */
+    --card-header-color: #f2cf66;
+    --card-header-text-color: #0e2f59;
+
+    /* Modal */
+    --modal-header-color: #1a5660;
+    --modal-bg-color: #0e2f59;
+
+    /* Tabela */
+    --bg-table: #1a5660;
+    --text-table-1: #f2cf66;
+    --text-table-2: #cbd5df;
+
+    /* Destaques e Cores de Ação */
+    --highlight-color: #f2cf66;
+    --checkbox-checked: #FF7300;
+
+    /* Botões */
+    --btn-primary-bg: #f2cf66;
+    --btn-primary-text: #090c2d;
+
+    /* Variação para botões de destaque (opcional, usado em alguns lugares) */
+    --btn-accent-bg: #f2cf66;
+    --btn-accent-text: #090c2d;
+
+    /* Variáveis do Ranking */
+    --ranking-item-bg: #0b2545;   /* Uma variação levemente mais escura do card #0e2f59 */
+    --ranking-pos-1: linear-gradient(90deg, #0e2f59, #f2cf66); /* Degradê Azul -> Ouro */
+
+    /* Inversão de ícones (para botões fechar modal) */
+    --invert-icon: 1;
+
+    /* Painel TV e Admin*/
+    --sidebar-bg-1: #0e2f59;
+    --sidebar-bg-2: #090c2d;
+    --sidebar-title: #cbd5df;
+    --sidebar-cronometro: #ffffff;
+    --sidebar-numero-grande: #f2cf66;
+    --sidebar-letra-atual: #388E3C;
+    --numero-grade: #666666;
+}
+
+/* 2. TEMA CLARO (Clean/Corporativo) */
+[data-theme="light"] {
+    --bg-body: #f4f6f8;
+    --bg-card: #ffffff;
+    --bg-card-border: #dee2e6;
+    --bg-form: #dee2e6;
+
+    /* Textos */
+    --text-primary: #212529;
+    --text-secondary: #121212;
+    --text-tertiary: #0d6efd;
+    --text-muted: #adb5bd;
+    --primary-color: #6c757d;
+
+    /* Botões */
+    --btn-outline-light-bg: #ffffff;
+    --btn-outline-light-color: #121212;
+
+    /* Cards */
+    --card-header-color: #6c757d;
+    --card-header-text-color: #f4f6f8;
+
+    /* Modal */
+    --modal-header-color: #dee2e6;
+    --modal-bg-color: #ffffff;
+
+    /* Tabela */
+    --bg-table: #f4f6f8;
+    --text-table-1: #0d6efd;
+    --text-table-2: #212529;
+
+    /* Destaques e Cores de Ação */
+    --highlight-color: #0d6efd;
+    --checkbox-checked: #198754;
+
+    --btn-primary-bg: #0d6efd;
+    --btn-primary-text: #ffffff;
+
+    --ranking-pos-1: linear-gradient(90deg, #ffffff, #fff3cd);
+    --ranking-item-bg: #f8f9fa;
+}
+
+/* 3. TEMA ESCURO (Dark Mode Clássico/Alto Contraste) */
+[data-theme="dark"] {
+    --bg-body: #000000;
+    --bg-card: #121212;
+    --bg-card-border: #333333;
+    --bg-form: #666666;
+
+    /* Textos */
+    --text-primary: #ffffff;
+    --text-secondary: #b0b0b0;
+    --text-tertiary: #74C0FC;
+    --text-muted: #666666;
+    --primary-color: #6c757d;
+
+    /* Cards */
+    --card-header-color: #333333;
+    --card-header-text-color: #b0b0b0;
+
+    /* Modal */
+    --modal-header-color: #666666;
+    --modal-bg-color: #ffffff;
+
+    /* Tabela */
+    --bg-table: #000000;
+    --text-table-1: #ffc107;
+    --text-table-2: #cbd5df;
+
+    /* Destaques e Cores de Ação */
+    --highlight-color: #ffc107;
+    --checkbox-checked: #0d6efd;
+
+    --btn-primary-bg: #343a40;
+    --btn-primary-text: #ffffff;
+
+    --ranking-pos-1: linear-gradient(90deg, #121212, #2a2a00);
+    --ranking-item-bg: #1e1e1e;
+}

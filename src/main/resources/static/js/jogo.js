@@ -12,8 +12,44 @@ let maxNumeros = 75;
 let empatados = [];
 let ultimaLetra = "";
 let ultimoNumero = "";
-let rankingVisivelTV = false;
 let intervaloCronometroAdmin = null;
+
+let vozesDisponiveis = [];
+if ('speechSynthesis' in window) {
+    window.speechSynthesis.onvoiceschanged = () => {
+        vozesDisponiveis = window.speechSynthesis.getVoices();
+    };
+}
+
+function obterMelhorVoz() {
+    if (vozesDisponiveis.length === 0) {
+        vozesDisponiveis = window.speechSynthesis.getVoices();
+    }
+
+    let voz = vozesDisponiveis.find(v => v.name === 'Google português do Brasil');
+
+    if (!voz) {
+        voz = vozesDisponiveis.find(v => v.name.includes("Natural") && v.lang.includes("pt-BR"));
+    }
+
+    if (!voz) {
+        voz = vozesDisponiveis.find(v => v.lang.includes("pt-BR"));
+    }
+
+    return voz;
+}
+
+//Ação de sortear pelo teclado (Barra de espaço ou Enter)
+document.addEventListener('keydown', function(event) {
+    if (event.code === 'Space' || event.code === 'Enter') {
+        event.preventDefault();
+        const btnSortear = document.getElementById('btnSortear');
+
+        if (btnSortear && !btnSortear.disabled) {
+            btnSortear.click();
+        }
+    }
+});
 
 document.addEventListener('DOMContentLoaded', () => {
     if (!ID_PARTIDA) return alert('ID inválido');
@@ -25,7 +61,6 @@ function abrirTelaRanking() {
     window.open('ranking.html', 'RankingBingo', 'width=1000,height=800,menubar=no,toolbar=no,location=no');
 }
 
-// Escuta a TV pedindo dados
 channel.onmessage = (event) => {
     if (event.data.tipo === 'TV_CONECTADA') {
         console.log("📡 TV conectou. Enviando dados de sincronia...");
@@ -204,19 +239,38 @@ function falarComPausa(letra, numero) {
         window.speechSynthesis.cancel();
         ultimaLetra = letra;
         ultimoNumero = numero;
+
+        const vozEscolhida = obterMelhorVoz();
+
         const msgLetra = new SpeechSynthesisUtterance(`Letra... ${letra}`);
         msgLetra.lang = 'pt-BR';
+        if (vozEscolhida) msgLetra.voice = vozEscolhida;
+
+        // --- ANIMAÇÃO DA VOZ ---
+        msgLetra.pitch = 1.0; // 1.0 é o normal. 1.2 é um pouco mais agudo (mais "alegre")
+        msgLetra.rate = 1.2;  // 1.0 é o normal. 1.1 é um pouquinho mais rápido e dinâmico
+
         msgLetra.onend = () => {
             setTimeout(() => {
-                const msgNum = new SpeechSynthesisUtterance(`Número... ${numero}`);
+                // Configuração da narração do Número
+                const msgNum = new SpeechSynthesisUtterance(`Número... ${numero}!`);
                 msgNum.lang = 'pt-BR';
+                if (vozEscolhida) msgNum.voice = vozEscolhida;
+
+                msgNum.pitch = 1.0;
+                msgNum.rate = 1.2;
+
                 window.speechSynthesis.speak(msgNum);
-            }, 800);
+            }, 600);
         };
+
         window.speechSynthesis.speak(msgLetra);
     }
 }
-function repetirUltimaFala() { if(ultimaLetra && ultimoNumero) falarComPausa(ultimaLetra, ultimoNumero); }
+
+function repetirUltimaFala() {
+    if(ultimaLetra && ultimoNumero) falarComPausa(ultimaLetra, ultimoNumero);
+}
 
 function calcularLetraFallback(numero) {
     if(!numero) return "";
@@ -337,9 +391,7 @@ async function finalizarNoBackend(id) {
     alert('Fim de Jogo!'); window.location.href='../index.html';
 }
 
-// =======================================================
-// CORREÇÃO DEFINITIVA: Expor funções para o HTML (onclick)
-// =======================================================
+// Expor funções para o HTML (onclick)
 window.realizarSorteio = realizarSorteio;
 window.repetirUltimaFala = repetirUltimaFala;
 window.abrirTelaTV = abrirTelaTV;

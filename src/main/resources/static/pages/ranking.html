@@ -3,115 +3,22 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Bingo - Ranking Geral</title>
+  <title>Bingo - Top 10</title>
+
   <link rel="stylesheet" href="../css/bootstrap.min.css">
   <link rel="stylesheet" href="../css/style.css">
-  <style>
-    body {
-      background-color: #000;
-      color: #fff;
-      height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      overflow: hidden;
-    }
-    .ranking-card {
-      width: 80%;
-      max-width: 1000px;
-      background: #111;
-      border: 2px solid #333;
-      border-radius: 20px;
-      box-shadow: 0 0 50px rgba(0,0,0,0.8);
-      padding: 2rem;
-    }
-    .titulo {
-      font-family: 'BingoNumbers', sans-serif;
-      font-size: 5rem;
-      color: var(--highlight-color);
-      text-align: center;
-      margin-bottom: 2rem;
-      text-transform: uppercase;
-      letter-spacing: 5px;
-      text-shadow: 0 0 20px rgba(255, 193, 7, 0.3);
-    }
-    .lista-ranking {
-      list-style: none;
-      padding: 0;
-      margin: 0;
-    }
-    .item-ranking {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      background: #1a1a1a;
-      margin-bottom: 15px;
-      padding: 20px 30px;
-      border-radius: 10px;
-      font-size: 2.5rem;
-      border-left: 10px solid #333;
-      transition: transform 0.3s;
-    }
-    .item-ranking:hover { transform: scale(1.02); }
-
-    /* Medalhas */
-    .pos-1 { border-color: #ffd700; background: linear-gradient(90deg, #1a1a1a, #2a2a00); }
-    .pos-1 .nome { color: #ffd700; font-weight: bold; }
-
-    .pos-2 { border-color: #c0c0c0; }
-    .pos-2 .nome { color: #c0c0c0; }
-
-    .pos-3 { border-color: #cd7f32; }
-    .pos-3 .nome { color: #cd7f32; }
-
-    .pontos { font-weight: bold; color: #fff; background: #333; padding: 5px 20px; border-radius: 50px; font-size: 2rem; }
-  </style>
+  <link rel="stylesheet" href="../css/ranking.css">
+  <link rel="stylesheet" href="../css/all.min.css">
+  <link rel="stylesheet" href="../css/themes.css">
 </head>
 <body>
-
 <div class="ranking-card">
-  <h1 class="titulo">🏆 Classificação 🏆</h1>
+  <h1 class="titulo">🏆 Top 10 Classificação 🏆</h1>
   <div id="lista" class="lista-ranking">
-    <div class="text-center text-muted">Carregando...</div>
+    <div class="text-center text-muted" style="grid-column: span 2;">Carregando...</div>
   </div>
 </div>
-
-<script>
-  // Atualiza automaticamente a cada 5 segundos
-  async function carregarRanking() {
-    try {
-      const response = await fetch('/api/ranking');
-      const jogadores = await response.json();
-
-      const container = document.getElementById('lista');
-      container.innerHTML = '';
-
-      // Pega apenas os top 5
-      jogadores.slice(0, 5).forEach((jog, index) => {
-        const div = document.createElement('div');
-        let classePos = '';
-        let icone = `#${index + 1}`;
-
-        if (index === 0) { classePos = 'pos-1'; icone = '🥇'; }
-        if (index === 1) { classePos = 'pos-2'; icone = '🥈'; }
-        if (index === 2) { classePos = 'pos-3'; icone = '🥉'; }
-
-        div.className = `item-ranking ${classePos}`;
-        div.innerHTML = `
-                        <div class="nome">${icone} ${jog.nome}</div>
-                        <div class="pontos">${jog.pontuacaoAcumulada} pts</div>
-                    `;
-        container.appendChild(div);
-      });
-    } catch (error) {
-      console.error("Erro ao buscar ranking:", error);
-    }
-  }
-
-  // Carrega ao abrir e configura o loop
-  carregarRanking();
-  setInterval(carregarRanking, 5000);
-</script>
+<script src="../js/ranking.js"></script>
+<script src="../js/theme-switcher.js"></script>
 </body>
 </html>

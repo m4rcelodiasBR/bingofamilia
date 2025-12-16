@@ -1,26 +1,16 @@
-/* --- Definição de Variáveis e Temas --- */
-:root {
-    --bg-body: #f8f9fa;
-    --bg-card: #ffffff;
-    --text-primary: #212529;
-    --text-secondary: #6c757d;
-    --primary-color: #0d6efd;
-    --highlight-color: #ffc107;
-    --border-color: #dee2e6;
-    --shadow: 0 4px 6px rgba(0,0,0,0.1);
-}
-
 /* --- Fontes --- */
 @font-face {
     font-family: 'Roboto';
     src: url('../fonts/Roboto-Regular.ttf') format('truetype');
     font-weight: 400;
 }
+
 @font-face {
     font-family: 'Roboto';
     src: url('../fonts/Roboto-Bold.ttf') format('truetype');
     font-weight: 700;
 }
+
 @font-face {
     font-family: 'BingoNumbers';
     src: url('../fonts/Oswald-Bold.ttf') format('truetype');
@@ -34,22 +24,83 @@ html, body {
     margin: 0;
     padding: 0;
     font-family: 'Roboto', sans-serif;
+
+    background-color: var(--bg-body);
+    color: var(--text-primary);
+
+    transition: background-color 0.3s ease, volor 0.3s ease;
+}
+
+.titulo-index {
+    font-family: 'BingoNumbers', sans-serif;
 }
 
 .card {
     background-color: var(--bg-card);
-    border-color: var(--border-color);
-    box-shadow: var(--shadow);
+    color: var(--text-primary);
+    transition: background-color 0.3s, border-color 0.3s;
 }
 
+.text-muted {
+    color: var(--text-muted) !important;
+}
+
+.text-secondary {
+    color: var(--text-secondary) !important;
+}
+
+.modal-content {
+    background-color: var(--bg-card);
+    color: var(--text-primary);
+}
+
+.modal-header {
+    background-color: var(--modal-header-color);
+    border: none !important;
+}
+
+.modal-footer {
+    border-color: var(--bg-card-border);
+    border: none !important;
+}
+
+.btn-close {
+    filter: invert(var(--invert-icon, 0));
+}
+
+.table {
+    color: var(--text-primary);
+}
+
+.table-striped > tbody > tr:nth-of-type(odd) > * {
+    color: var(--text-primary);
+    box-shadow: inset 0 0 0 9999px rgba(128, 128, 128, 0.05);
+}
+
+.table-hover > tbody > tr:hover > * {
+    color: var(--text-primary);
+    box-shadow: inset 0 0 0 9999px rgba(128, 128, 128, 0.1);
+}
+
+.table>:not(caption)>*>* {
+    background-color: var(--bg-table);
+    color: var(--text-table-1);
+}
+
+.text-players {
+    color: var(--text-table-2) !important;
+}
+
+.bg-players {
+    background-color: var(--bg-card-border);
+}
+
+.text-tertiary {
+    color: var(--text-tertiary) !important;
+}
 /* =========================================
    LAYOUT DA TV (Side-by-Side Maximizada)
    ========================================= */
-body.modo-tv {
-    overflow: hidden;
-    background-color: #000;
-    color: white;
-}
 
 .tv-container {
     width: 100vw;
@@ -66,13 +117,17 @@ body.modo-tv {
     flex: 0 0 25vw;
     display: flex;
     flex-direction: column;
-    background: radial-gradient(circle at top right, #222 0%, #000 100%);
+    background: radial-gradient(circle at top right, var(--sidebar-bg-1) 0%, var(--sidebar-bg-2) 100%);
     border-radius: 15px;
     border: 1px solid #333;
     padding: 2vh 1vw;
     text-align: center;
-    box-shadow: 4px 0 15px rgba(0,0,0,0.5);
+    box-shadow: 4px 0 15px rgba(0, 0, 0, 0.5);
     height: 100%;
+}
+
+.tv-sidebar-title {
+    color: var(--sidebar-title);
 }
 
 .tv-logo {
@@ -83,13 +138,13 @@ body.modo-tv {
 
 /* Cronômetro na TV */
 .tv-cronometro {
-    background: #000;
+    background: var(--sidebar-bg-2);
     border: 1px solid #444;
-    border-radius: 20px;
+    border-radius: 40px;
     padding: 5px 15px;
-    color: #ccc;
+    color: var(--sidebar-title);
     font-family: 'Roboto', monospace;
-    font-size: 2vh;
+    font-size: 3vh;
     margin-bottom: 2vh;
     display: inline-block;
 }
@@ -103,7 +158,7 @@ body.modo-tv {
 }
 
 .tv-titulo-destaque {
-    color: #aaa;
+    color: var(--sidebar-title);
     font-size: 2.5vh;
     letter-spacing: 2px;
     margin-bottom: 1vh;
@@ -120,8 +175,12 @@ body.modo-tv {
     font-family: 'BingoNumbers', sans-serif;
     font-size: 15vh;
     font-weight: bold;
-    color: var(--primary-color);
-    text-shadow: 2px 2px 10px rgba(13, 110, 253, 0.4);
+    color: var(--sidebar-letra-atual);
+    text-shadow: 2px 2px 10px var(--sidebar-letra-atual);
+}
+
+.admin-letra-atual {
+    color: var(--sidebar-letra-atual);
 }
 
 .tv-numero-atual {
@@ -133,15 +192,19 @@ body.modo-tv {
     text-shadow: 0 0 40px rgba(255, 193, 7, 0.5);
 }
 
+.admin-numero-atual {
+    color: var(--highlight-color);
+}
+
 .tv-msg-destaque {
     font-size: 3vh;
     color: var(--highlight-color);
     margin-top: 2vh;
-    min-height: 4vh;
+    min-height: 2vh;
 }
 
 .tv-contador-box {
-    background: #1a1a1a;
+    background: var(--sidebar-bg-2);
     width: 100%;
     padding: 1.5vh;
     border-radius: 10px;
@@ -169,7 +232,7 @@ body.modo-tv {
     flex: 1;
     display: flex;
     flex-direction: column;
-    background: #111;
+    background: radial-gradient(circle at top right, var(--sidebar-bg-1) 0%, var(--sidebar-bg-2) 100%);
     border-radius: 10px;
     border: 1px solid #333;
     overflow: hidden;
@@ -196,8 +259,16 @@ body.modo-tv {
     font-weight: 900;
     text-align: center;
 }
-.cabecalho-letra { font-size: 5vh; padding: 0.5vh 0; }
-.cabecalho-admin { font-size: 1.2rem; padding: 4px 0; }
+
+.cabecalho-letra {
+    font-size: 5vh;
+    padding: 0.5vh 0;
+}
+
+.cabecalho-admin {
+    font-size: 1.2rem;
+    padding: 4px 0;
+}
 
 .corpo-numeros, .corpo-admin {
     flex: 1;
@@ -207,6 +278,7 @@ body.modo-tv {
     align-items: center;
     padding: 1vh 0;
     width: 100%;
+    background: radial-gradient(circle at top right, var(--sidebar-bg-1) 0%, var(--sidebar-bg-2) 100%);
 }
 
 /* BOLINHAS REDONDAS */
@@ -221,8 +293,8 @@ body.modo-tv {
 
 .numero-grade {
     font-family: 'Roboto', sans-serif;
-    color: #444;
-    width: 70%;
+    color: var(--numero-grade);
+    width: 50%;
     font-size: 2.5vh;
 }
 
@@ -230,8 +302,8 @@ body.modo-tv {
     color: white;
     background-color: rgba(255, 255, 255, 0.2);
     font-size: 3vh;
-    border: 2px solid rgba(255,255,255,0.4);
-    box-shadow: 0 0 15px rgba(0,0,0,0.5);
+    border: 2px solid rgba(255, 255, 255, 0.4);
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
 }
 
 .numero-grade.ultimo {
@@ -245,35 +317,69 @@ body.modo-tv {
 }
 
 .bola-admin {
-    width: 28px; height: 28px; font-size: 0.85rem; color: #ccc;
+    width: 28px;
+    height: 28px;
+    font-size: 0.85rem;
+    color: #ccc;
 }
+
 .bola-admin.marcado {
-    background-color: var(--primary-color); color: white; box-shadow: 1px 1px 3px rgba(0,0,0,0.2);
+    background-color: var(--primary-color);
+    color: white;
+    box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
 }
+
 .bola-admin.ultimo {
-    background-color: var(--highlight-color); color: black; border: 2px solid #333; font-weight: 900; transform: scale(1.2);
+    background-color: var(--highlight-color);
+    color: black;
+    border: 2px solid #333;
+    font-weight: 900;
+    transform: scale(1.2);
 }
 
 @keyframes piscarTexto {
-    from { box-shadow: 0 0 10px var(--highlight-color); transform: scale(1.2); }
-    to { box-shadow: 0 0 30px var(--highlight-color); transform: scale(1.3); }
+    from {
+        box-shadow: 0 0 10px var(--highlight-color);
+        transform: scale(1.2);
+    }
+    to {
+        box-shadow: 0 0 30px var(--highlight-color);
+        transform: scale(1.7);
+    }
 }
 
 /* Cores das Colunas */
-.col-b .cabecalho-letra, .col-b .cabecalho-admin { background-color: #d32f2f; }
-.col-i .cabecalho-letra, .col-i .cabecalho-admin { background-color: #1976d2; }
-.col-n .cabecalho-letra, .col-n .cabecalho-admin { background-color: #fbc02d; color: #000; }
-.col-g .cabecalho-letra, .col-g .cabecalho-admin { background-color: #388e3c; }
-.col-o .cabecalho-letra, .col-o .cabecalho-admin { background-color: #7b1fa2; }
+.col-b .cabecalho-letra, .col-b .cabecalho-admin {
+    background-color: #d32f2f;
+}
+
+.col-i .cabecalho-letra, .col-i .cabecalho-admin {
+    background-color: #1976d2;
+}
+
+.col-n .cabecalho-letra, .col-n .cabecalho-admin {
+    background-color: #fbc02d;
+    color: #000;
+}
+
+.col-g .cabecalho-letra, .col-g .cabecalho-admin {
+    background-color: #388e3c;
+}
+
+.col-o .cabecalho-letra, .col-o .cabecalho-admin {
+    background-color: #7b1fa2;
+}
 
 /* =========================================
    RANKING (OVERLAY) E DESEMPATE
    ========================================= */
 .ranking-container {
-    background: rgba(0,0,0,0.98);
+    background: rgba(0, 0, 0, 0.98);
     position: fixed;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
     z-index: 6000;
     display: none;
     flex-direction: column;
@@ -295,7 +401,7 @@ body.modo-tv {
     background: #1e1e1e;
     border-radius: 15px;
     overflow: hidden;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
 }
 
 .linha-ranking {
@@ -308,9 +414,22 @@ body.modo-tv {
     align-items: center;
 }
 
-.posicao-1 { color: #ffd700; font-weight: bold; font-size: 2.5rem; text-shadow: 0 0 10px #ffd700; }
-.posicao-2 { color: #c0c0c0; font-weight: bold; }
-.posicao-3 { color: #cd7f32; font-weight: bold; }
+.posicao-1 {
+    color: #ffd700;
+    font-weight: bold;
+    font-size: 2.5rem;
+    text-shadow: 0 0 10px #ffd700;
+}
+
+.posicao-2 {
+    color: #c0c0c0;
+    font-weight: bold;
+}
+
+.posicao-3 {
+    color: #cd7f32;
+    font-weight: bold;
+}
 
 .pontos-ranking {
     background: #333;
@@ -320,12 +439,130 @@ body.modo-tv {
 }
 
 @keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
 }
 
 .card-duelo-tv {
-    background: #fff; border-radius: 15px; padding: 30px;
-    min-width: 250px; text-align: center; color: #333;
+    background: #fff;
+    border-radius: 15px;
+    padding: 30px;
+    min-width: 250px;
+    text-align: center;
+    color: #333;
 }
-.duelo-numero { font-size: 5rem; color: #dc3545; font-weight: 800; }
+
+.duelo-numero {
+    font-size: 5rem;
+    color: #dc3545;
+    font-weight: 800;
+}
+
+/* =========================================
+   SOBREPOSIÇÃO AO BOOTSTRAP
+   ========================================= */
+.btn-primary {
+    background-color: var(--btn-primary-bg) !important;
+    border-color: var(--btn-primary-bg) !important;
+    color: var(--btn-primary-text) !important;
+}
+
+.btn-primary:hover,
+.btn-primary:focus,
+.btn-primary:active {
+    background-color: var(--btn-primary-bg) !important;
+    border-color: var(--btn-primary-bg) !important;
+    filter: brightness(0.9);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+}
+
+.btn-outline-primary {
+    color: var(--btn-primary-bg) !important;
+    border-color: var(--btn-primary-bg) !important;
+}
+
+.btn-outline-primary:hover {
+    background-color: var(--text-secondary) !important;
+    color: var(--bg-card) !important;
+}
+
+.btn-outline-secondary {
+    color: var(--text-secondary) !important;
+    border-color: var(--text-secondary) !important;
+}
+
+.btn-outline-secondary:hover {
+    background-color: var(--text-secondary) !important;
+    color: var(--bg-card) !important;
+}
+
+.btn-outline-light {
+    color: var(--btn-outline-light-color) !important;
+    border-color: var(--btn-outline-light-color) !important;
+}
+
+.btn-outline-light:hover {
+    background-color: var(--btn-outline-light-color) !important;
+    color: var(--btn-outline-light-bg) !important;
+}
+
+.bg-primary {
+    background-color: var(--bg-card) !important;
+}
+
+.bg-dark {
+    background-color: var(--bg-card) !important;
+    border-bottom: 1px solid var(--bg-card-border);
+}
+
+.navbar-dark .navbar-brand,
+.navbar-dark .nav-link {
+    color: var(--text-primary) !important;
+}
+
+.text-primary {
+    color: var(--highlight-color) !important;
+}
+
+.text-success {
+    filter: brightness(1.2);
+}
+
+.form-control, .form-select {
+    background-color: var(--bg-form) !important;
+    border-color: var(--bg-card-border) !important;
+    color: var(--text-primary) !important;
+}
+
+.form-control:focus, .form-select:focus {
+    box-shadow: 0 0 0 0.25rem rgba(var(--primary-color), 0.25);
+    border-color: var(--highlight-color) !important;
+}
+
+.small {
+    color: var(--primary-color) !important;
+}
+
+.card-header {
+    background-color: var(--card-header-color);
+    color: var(--card-header-text-color);
+}
+
+.badge {
+    --bs-badge-padding-y: 0.65em !important;
+}
+
+.form-check-input:checked {
+    background-color: var(--checkbox-checked) !important;
+    border-color: var(--checkbox-checked) !important;
+}
+
+.btn-check:checked+.btn {
+    color: var(--bg-card) !important;
+    background-color: var(--primary-color) !important;
+    border-color: var(--primary-color) !important;
+}

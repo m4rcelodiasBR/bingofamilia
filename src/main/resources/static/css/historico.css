@@ -1,0 +1,8 @@
+.coluna-numeros {
+    max-width: 300px;
+    font-size: 0.85rem;
+    line-height: 1.2;
+    color: var(--text-secondary);
+    word-wrap: break-word;
+    white-space: normal;
+}

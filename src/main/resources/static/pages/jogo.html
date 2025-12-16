@@ -6,15 +6,21 @@
     <title>Bingo - Operador</title>
     <link rel="stylesheet" href="../css/bootstrap.min.css">
     <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/all.min.css">
+    <link rel="stylesheet" href="../css/themes.css">
 </head>
-<body class="bg-light">
+<body
+>
 
 <nav class="navbar navbar-dark bg-dark shadow-sm">
     <div class="container-fluid px-4">
-        <span class="navbar-brand">🎱 Partida #<span id="partidaIdDisplay">--</span></span>
-
+        <div>
+            <img class="me-2" src="../img/bingo_logo.png" width="70" alt="Bingo Logo">
+            <span class="navbar-brand titulo-index text-uppercase">Partida #<span id="partidaIdDisplay">--</span></span>
+        </div>
         <div class="text-white fw-bold border px-3 py-1 rounded bg-secondary">
-            ⏱ <span id="tempoDecorridoAdmin">00:00</span>
+            <i class="fa-regular fa-stopwatch pe-2"></i>
+            <span id="tempoDecorridoAdmin">00:00</span>
         </div>
         <div class="d-flex gap-2">
             <button class="btn btn-warning btn-sm fw-bold" onclick="abrirTelaRanking()">
@@ -40,8 +46,8 @@
                 <div class="card-body py-4">
                     <h6 class="text-muted text-uppercase small mb-3">Último Sorteado</h6>
                     <div class="d-flex justify-content-center align-items-baseline gap-2 mb-2">
-                        <span id="letraSorteada" class="h1 fw-bold text-primary" style="font-size: 4rem;">--</span>
-                        <span id="numeroSorteado" class="display-3 fw-bold text-dark">--</span>
+                        <span id="letraSorteada" class="h1 fw-bold admin-letra-atual" style="font-size: 4rem;">--</span>
+                        <span id="numeroSorteado" class="display-3 fw-bold admin-numero-atual">--</span>
                     </div>
                     <div id="legendaNumero" class="h5 text-secondary">Aguardando...</div>
                 </div>
@@ -54,9 +60,9 @@
 
         <div class="col-md-9">
             <div class="card shadow h-100">
-                <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                <div class="card-header d-flex justify-content-between align-items-center">
                     <span class="fw-bold">Tabuleiro</span>
-                    <span class="badge bg-info text-dark">Sorteados: <span id="contadorSorteados">0</span></span>
+                    <span class="badge bg-dark text-white">Sorteados: <span id="contadorSorteados">0</span></span>
                 </div>
                 <div class="card-body p-2" style="min-height: 400px;">
                     <div id="tabuleiroGrid" class="admin-grid-container"></div>
@@ -90,5 +96,6 @@
 
 <script src="../js/bootstrap.bundle.min.js"></script>
 <script src="../js/jogo.js"></script>
+<script src="../js/theme-switcher.js"></script>
 </body>
 </html>
