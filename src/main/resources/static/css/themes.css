@@ -21,8 +21,8 @@
     --btn-outline-light-color: #cbd5df;
 
     /* Cards */
-    --card-header-color: #f2cf66;
-    --card-header-text-color: #0e2f59;
+    --card-header-color: #1a5660;
+    --card-header-text-color: #cbd5df;
 
     /* Modal */
     --modal-header-color: #1a5660;
@@ -34,7 +34,7 @@
     --text-table-2: #cbd5df;
 
     /* Destaques e Cores de Ação */
-    --highlight-color: #f2cf66;
+    --grade-ultimo-sorteado-bg: #f2cf66;
     --checkbox-checked: #FF7300;
 
     /* Botões */
@@ -60,6 +60,10 @@
     --sidebar-numero-grande: #f2cf66;
     --sidebar-letra-atual: #388E3C;
     --numero-grade: #666666;
+    --text-sorteados: #cbd5df;
+    --numero-grade-marcado: #cbd5df;
+    --numero-grade-bg: #0e2f59;
+    --grade-ultimo-sorteado: #090c2d;
 }
 
 /* 2. TEMA CLARO (Clean/Corporativo) */
@@ -94,7 +98,7 @@
     --text-table-2: #212529;
 
     /* Destaques e Cores de Ação */
-    --highlight-color: #0d6efd;
+    --grade-ultimo-sorteado-bg: #0d6efd;
     --checkbox-checked: #198754;
 
     --btn-primary-bg: #0d6efd;
@@ -102,6 +106,22 @@
 
     --ranking-pos-1: linear-gradient(90deg, #ffffff, #fff3cd);
     --ranking-item-bg: #f8f9fa;
+
+    /* Inversão de ícones (para botões fechar modal) */
+    --invert-icon: 1;
+
+    /* Painel TV e Admin*/
+    --sidebar-bg-1: #ffffff;
+    --sidebar-bg-2: #f4f6f8;
+    --sidebar-title: #121212;
+    --sidebar-cronometro: #212529;
+    --sidebar-numero-grande: #0d6efd;
+    --sidebar-letra-atual: #388E3C;
+    --numero-grade: #6c757d;
+    --text-sorteados: #d32f2f;
+    --numero-grade-marcado: #121212;
+    --numero-grade-bg: #F4A460;
+    --grade-ultimo-sorteado: #fbc02d;
 }
 
 /* 3. TEMA ESCURO (Dark Mode Clássico/Alto Contraste) */
@@ -132,7 +152,7 @@
     --text-table-2: #cbd5df;
 
     /* Destaques e Cores de Ação */
-    --highlight-color: #ffc107;
+    --grade-ultimo-sorteado-bg: #ffc107;
     --checkbox-checked: #0d6efd;
 
     --btn-primary-bg: #343a40;
@@ -140,4 +160,20 @@
 
     --ranking-pos-1: linear-gradient(90deg, #121212, #2a2a00);
     --ranking-item-bg: #1e1e1e;
+
+    /* Inversão de ícones (para botões fechar modal) */
+    --invert-icon: 1;
+
+    /* Painel TV e Admin*/
+    --sidebar-bg-1: #121212;
+    --sidebar-bg-2: #000000;
+    --sidebar-title: #b0b0b0;
+    --sidebar-cronometro: #ffffff;
+    --sidebar-numero-grande: #f2cf66;
+    --sidebar-letra-atual: #388E3C;
+    --numero-grade: #666666;
+    --text-sorteados: #ffc107;
+    --numero-grade-marcado: #ffc107;
+    --numero-grade-bg: #343a40;
+    --grade-ultimo-sorteado: #000000;
 }

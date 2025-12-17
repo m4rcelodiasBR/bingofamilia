@@ -199,6 +199,7 @@ function prepararDesempate(jogadores) {
         container.appendChild(card);
     });
 }
+
 function animarCardDuelo(index, numero) {
     const el = document.getElementById(`tv-duelo-num-${index}`);
     if (el) {
@@ -206,8 +207,33 @@ function animarCardDuelo(index, numero) {
         const loop = setInterval(() => { el.textContent = Math.floor(Math.random()*99)+1; count++; if(count>15){ clearInterval(loop); el.textContent=numero; el.style.transform="scale(1.3)"; } }, 80);
     }
 }
+
 function mostrarVitoria(nome) {
     document.getElementById('overlayDesempate').style.display = 'none';
     document.getElementById('nomeVencedorFinal').textContent = nome || "VENCEDOR";
+    reproduzirVideoAleatorio();
     document.getElementById('overlayVitoria').style.display = 'flex';
+}
+
+const videosDeVitoria = [
+    '../img/vencedor_bingo0.mp4',
+    '../img/vencedor_bingo1.mp4',
+    '../img/vencedor_bingo2.mp4',
+    '../img/vencedor_bingo3.mp4',
+    '../img/vencedor_bingo4.mp4',
+    '../img/vencedor_bingo5.mp4'
+];
+
+function reproduzirVideoAleatorio() {
+    const videoEl = document.getElementById('videoBackground');
+    const indiceSorteado = Math.floor(Math.random() * videosDeVitoria.length);
+    const videoEscolhido = videosDeVitoria[indiceSorteado];
+
+    console.log("Reproduzindo vídeo de vitória:", videoEscolhido);
+
+    videoEl.src = videoEscolhido;
+    videoEl.load();
+    videoEl.play().catch(erro => {
+        console.error("Erro ao tentar reproduzir vídeo automaticamente:", erro);
+    });
 }

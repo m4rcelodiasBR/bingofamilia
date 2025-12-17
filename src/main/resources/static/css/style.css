@@ -1,13 +1,13 @@
 /* --- Fontes --- */
 @font-face {
-    font-family: 'Roboto';
-    src: url('../fonts/Roboto-Regular.ttf') format('truetype');
+    font-family: 'Play';
+    src: url('../fonts/Play-Regular.ttf') format('truetype');
     font-weight: 400;
 }
 
 @font-face {
-    font-family: 'Roboto';
-    src: url('../fonts/Roboto-Bold.ttf') format('truetype');
+    font-family: 'Play';
+    src: url('../fonts/Play-Bold.ttf') format('truetype');
     font-weight: 700;
 }
 
@@ -17,22 +17,63 @@
     font-weight: 700;
 }
 
+@font-face {
+    font-family: 'Aladin';
+    src: url('../fonts/Aladin-Regular.ttf') format('truetype');
+    font-weight: 400;
+}
+
+@font-face {
+    font-family: 'BadScript';
+    src: url('../fonts/BadScript-Regular.ttf') format('truetype');
+    font-weight: 400;
+}
+
+@font-face {
+    font-family: 'NotoSerif';
+    src: url('../fonts/NotoSerifHentaigana-Regular.ttf') format('truetype');
+    font-weight: 400;
+}
+
 /* --- Aplicação Global --- */
 html, body {
     height: 100%;
     width: 100%;
     margin: 0;
     padding: 0;
-    font-family: 'Roboto', sans-serif;
-
+    font-family: 'Play', sans-serif;
     background-color: var(--bg-body);
     color: var(--text-primary);
-
     transition: background-color 0.3s ease, volor 0.3s ease;
 }
 
 .titulo-index {
-    font-family: 'BingoNumbers', sans-serif;
+    font-family: 'Aladin', sans-serif;
+}
+
+.titulo-painel {
+    font-family: 'Aladin', sans-serif;
+    font-size: 1.6rem;
+}
+
+.titulo-nav {
+    font-family: 'Aladin', sans-serif;
+    font-size: 2rem;
+    font-weight: bold;
+}
+
+.subtitulo-index {
+    font-family: 'BadScript', sans-serif;
+    font-size: 5rem;
+}
+
+.subtitulo-painel {
+    font-family: 'BadScript', sans-serif;
+    font-size: 3rem;
+}
+
+.noto-serif {
+    font-family: 'NotoSerif', sans-serif;
 }
 
 .card {
@@ -98,6 +139,11 @@ html, body {
 .text-tertiary {
     color: var(--text-tertiary) !important;
 }
+
+.text-sorteados {
+    color: var(--text-sorteados);
+}
+
 /* =========================================
    LAYOUT DA TV (Side-by-Side Maximizada)
    ========================================= */
@@ -124,10 +170,6 @@ html, body {
     text-align: center;
     box-shadow: 4px 0 15px rgba(0, 0, 0, 0.5);
     height: 100%;
-}
-
-.tv-sidebar-title {
-    color: var(--sidebar-title);
 }
 
 .tv-logo {
@@ -187,18 +229,18 @@ html, body {
     font-family: 'BingoNumbers', sans-serif;
     font-size: 22vh;
     font-weight: 800;
-    color: var(--highlight-color);
+    color: var(--grade-ultimo-sorteado-bg);
     line-height: 0.9;
     text-shadow: 0 0 40px rgba(255, 193, 7, 0.5);
 }
 
 .admin-numero-atual {
-    color: var(--highlight-color);
+    color: var(--grade-ultimo-sorteado-bg);
 }
 
 .tv-msg-destaque {
     font-size: 3vh;
-    color: var(--highlight-color);
+    color: var(--grade-ultimo-sorteado-bg);
     margin-top: 2vh;
     min-height: 2vh;
 }
@@ -234,14 +276,12 @@ html, body {
     flex-direction: column;
     background: radial-gradient(circle at top right, var(--sidebar-bg-1) 0%, var(--sidebar-bg-2) 100%);
     border-radius: 10px;
-    border: 1px solid #333;
     overflow: hidden;
     height: 100%;
 }
 
 .coluna-admin {
     background: #f8f9fa;
-    border: 1px solid #dee2e6;
     border-radius: 5px;
 }
 
@@ -266,7 +306,7 @@ html, body {
 }
 
 .cabecalho-admin {
-    font-size: 1.2rem;
+    font-size: 1.5rem;
     padding: 4px 0;
 }
 
@@ -279,6 +319,7 @@ html, body {
     padding: 1vh 0;
     width: 100%;
     background: radial-gradient(circle at top right, var(--sidebar-bg-1) 0%, var(--sidebar-bg-2) 100%);
+    font-family: 'NotoSerif', sans-serif;
 }
 
 /* BOLINHAS REDONDAS */
@@ -292,26 +333,26 @@ html, body {
 }
 
 .numero-grade {
-    font-family: 'Roboto', sans-serif;
+    font-family: 'NotoSerif', sans-serif;
     color: var(--numero-grade);
     width: 50%;
     font-size: 2.5vh;
 }
 
 .numero-grade.marcado {
-    color: white;
-    background-color: rgba(255, 255, 255, 0.2);
+    color: var(--numero-grade-marcado);
+    background-color: var(--numero-grade-bg);
     font-size: 3vh;
     border: 2px solid rgba(255, 255, 255, 0.4);
     box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
 }
 
 .numero-grade.ultimo {
-    background-color: var(--highlight-color);
-    color: #000;
+    background-color: var(--grade-ultimo-sorteado-bg);
+    color: var(--grade-ultimo-sorteado);
     font-weight: 900;
     transform: scale(1.2);
-    box-shadow: 0 0 30px var(--highlight-color);
+    box-shadow: 0 0 30px var(--grade-ultimo-sorteado-bg);
     z-index: 10;
     animation: piscarTexto 1s infinite alternate;
 }
@@ -320,30 +361,29 @@ html, body {
     width: 28px;
     height: 28px;
     font-size: 0.85rem;
-    color: #ccc;
+    color: var(--text-secondary);
 }
 
 .bola-admin.marcado {
-    background-color: var(--primary-color);
-    color: white;
+    color: var(--grade-ultimo-sorteado-bg);
     box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
+    border: 1px solid var(--grade-ultimo-sorteado-bg);
 }
 
 .bola-admin.ultimo {
-    background-color: var(--highlight-color);
-    color: black;
-    border: 2px solid #333;
+    background-color: var(--grade-ultimo-sorteado-bg);
+    color: var(--bg-card);
     font-weight: 900;
     transform: scale(1.2);
 }
 
 @keyframes piscarTexto {
     from {
-        box-shadow: 0 0 10px var(--highlight-color);
+        box-shadow: 0 0 10px var(--grade-ultimo-sorteado-bg);
         transform: scale(1.2);
     }
     to {
-        box-shadow: 0 0 30px var(--highlight-color);
+        box-shadow: 0 0 30px var(--grade-ultimo-sorteado-bg);
         transform: scale(1.7);
     }
 }
@@ -391,7 +431,7 @@ html, body {
 .titulo-ranking {
     font-family: 'BingoNumbers', sans-serif;
     font-size: 5rem;
-    color: var(--highlight-color);
+    color: var(--grade-ultimo-sorteado-bg);
     text-shadow: 0 0 20px rgba(255, 193, 7, 0.5);
     margin-bottom: 2rem;
 }
@@ -516,7 +556,6 @@ html, body {
 
 .bg-dark {
     background-color: var(--bg-card) !important;
-    border-bottom: 1px solid var(--bg-card-border);
 }
 
 .navbar-dark .navbar-brand,
@@ -525,7 +564,7 @@ html, body {
 }
 
 .text-primary {
-    color: var(--highlight-color) !important;
+    color: var(--grade-ultimo-sorteado-bg) !important;
 }
 
 .text-success {
@@ -540,7 +579,7 @@ html, body {
 
 .form-control:focus, .form-select:focus {
     box-shadow: 0 0 0 0.25rem rgba(var(--primary-color), 0.25);
-    border-color: var(--highlight-color) !important;
+    border-color: var(--grade-ultimo-sorteado-bg) !important;
 }
 
 .small {
@@ -565,4 +604,10 @@ html, body {
     color: var(--bg-card) !important;
     background-color: var(--primary-color) !important;
     border-color: var(--primary-color) !important;
+}
+
+.list-group {
+    --bs-list-group-bg: var(--modal-header-color) !important;
+    --bs-list-group-color: var(--text-primary) !important;
+    --bs-list-group-border-width: unset !important;
 }

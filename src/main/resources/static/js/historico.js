@@ -12,7 +12,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         partidas.forEach(p => {
             const dataFormatada = new Date(p.dataInicio).toLocaleString('pt-BR');
-            const vencedor = p.vencedor ? `<span class="fw-bold text-warning"><i class="fa-regular fa-trophy-star pe-1"></i> ${p.vencedor.nome}</span>` : '<span class="text-muted">-</span>';
+            const vencedor = p.vencedor ? `<span class="badge bg-warning text-dark"><i class="fa-regular fa-trophy-star pe-1"></i> ${p.vencedor.nome}</span>` : '<span class="text-muted">-</span>';
             const duracao = p.duracaoEmSegundos ? formatarDuracao(p.duracaoEmSegundos) : '-';
 
             let status = '<span class="badge bg-success">Finalizada</span>';

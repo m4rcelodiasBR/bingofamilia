@@ -386,9 +386,18 @@ function confirmarVitoriaFinal() {
 
 async function finalizarNoBackend(id) {
     const nome = dadosPartida.participantes.find(p=>p.id==id)?.nome;
-    await fetch(`${API_URL}/partidas/${ID_PARTIDA}/finalizar`, {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({vencedorId:Number(id)})});
-    enviarParaTV({tipo:'VITORIA_FINAL', vencedor:nome});
-    alert('Fim de Jogo!'); window.location.href='../index.html';
+    await fetch(`${API_URL}/partidas/${ID_PARTIDA}/finalizar`, {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({
+            vencedorId:Number(id)}
+        )});
+    enviarParaTV({
+        tipo:'VITORIA_FINAL',
+        vencedor:nome
+    });
+    alert('Fim de Jogo!');
+    window.location.href = 'controlador.html';
 }
 
 // Expor funções para o HTML (onclick)

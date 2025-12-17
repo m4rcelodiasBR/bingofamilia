@@ -14,8 +14,8 @@
   <div class="tv-sidebar">
     <div class="tv-logo">
       <img class="mx-auto mb-2" src="../img/bingo_logo.png" width="250" alt="Bingo Logo">
-      <div class="h3 tv-sidebar-title fw-bold mb-0">BINGO</div>
-      <div class="h1 tv-sidebar-title">DA FAMÍLIA SILVA</div>
+      <div class="h3 titulo-painel fw-bold mb-1">Bingo de Natal 2025</div>
+      <div class="h1 subtitulo-painel">P@po Famíli@</div>
     </div>
     <div class="tv-cronometro">
       <i class="fa-regular fa-stopwatch pe-2"></i>
@@ -31,7 +31,7 @@
     </div>
     <div class="tv-contador-box">
       <div class="small text-uppercase text-secondary mb-1">Bolas Sorteades</div>
-      <span id="contadorTV" class="display-4 fw-bold text-white">0</span>
+      <span id="contadorTV" class="display-4 fw-bold text-sorteados">0</span>
     </div>
   </div>
   <div class="tv-content">
@@ -47,10 +47,26 @@
   </div>
 </div>
 
-<div id="overlayVitoria" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:9999; flex-direction:column; align-items:center; justify-content:center; color:#ffd700;">
-  <h1 class="display-3 text-white">O VENCEDOR É</h1>
-  <div id="nomeVencedorFinal" class="fw-bold" style="font-size: 6rem; text-shadow: 0 0 30px red;">--</div>
-  <div class="mt-4 text-white h2">🎉 PARABÉNS! 🎉</div>
+<div id="overlayVitoria" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; z-index:9999; flex-direction:column; align-items:center; justify-content:center; color:#ffd700; overflow:hidden;">
+  <video autoplay muted loop playsinline id="videoBackground"
+         style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: -2;">
+  </video>
+  <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: -1;"></div>
+  <div class="text-center" style="z-index: 1; position: relative;">
+    <div class="display-3 text-white fw-bold mb-4" style="font-size: 2rem; text-shadow: 2px 2px 10px #000;">
+      O VENCEDOR É
+    </div>
+    <div id="nomeVencedorFinal" class="fw-bold"
+         style="font-size: 7rem; line-height: 1.1; text-shadow: 0 0 30px rgba(255, 0, 0, 0.8), 0 0 10px #fff;">
+      --
+    </div>
+    <div class="mt-5 text-white fw-bold" style="font-size: 2.5rem; letter-spacing: 5px; text-shadow: 2px 2px 4px #000;">
+      🎉 PARABÉNS! 🎉
+    </div>
+    <img src="../img/bingo_logo.png" width="300" alt="Bingo Logo">
+    <div class="h3 titulo-painel fw-bold mb-1">Bingo de Natal 2025</div>
+    <div class="h1 subtitulo-painel">P@po Famíli@</div>
+  </div>
 </div>
 
 <script src="../js/painel.js"></script>
