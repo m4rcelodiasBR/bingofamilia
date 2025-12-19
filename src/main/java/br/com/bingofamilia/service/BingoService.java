@@ -2,6 +2,7 @@ package br.com.bingofamilia.service;
 
 import br.com.bingofamilia.domain.Jogador;
 import br.com.bingofamilia.domain.Partida;
+import br.com.bingofamilia.domain.RegraVitoria;
 import br.com.bingofamilia.domain.TipoJogo;
 import br.com.bingofamilia.exception.JogoException;
 import br.com.bingofamilia.repository.JogadorRepository;
@@ -95,9 +96,10 @@ public class BingoService {
     }
 
     @Transactional
-    public Partida iniciarNovaPartida(TipoJogo tipoJogo, List<Long> idsJogadoresParticipantes) {
+    public Partida iniciarNovaPartida(TipoJogo tipoJogo, RegraVitoria regraVitoria, List<Long> idsJogadoresParticipantes) {
         Partida partida = new Partida();
         partida.setTipoJogo(tipoJogo);
+        partida.setRegraVitoria(regraVitoria != null ? regraVitoria : RegraVitoria.CARTELA_CHEIA);
         partida.setDataInicio(LocalDateTime.now());
 
         if (idsJogadoresParticipantes != null && !idsJogadoresParticipantes.isEmpty()) {

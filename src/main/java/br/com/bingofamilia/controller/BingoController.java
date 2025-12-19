@@ -2,6 +2,7 @@ package br.com.bingofamilia.controller;
 
 import br.com.bingofamilia.domain.Jogador;
 import br.com.bingofamilia.domain.Partida;
+import br.com.bingofamilia.domain.RegraVitoria;
 import br.com.bingofamilia.domain.TipoJogo;
 import br.com.bingofamilia.service.BingoService;
 import org.springframework.http.ResponseEntity;
@@ -60,7 +61,11 @@ public class BingoController {
 
     @PostMapping("/partidas")
     public ResponseEntity<Partida> criarPartida(@RequestBody NovaPartidaRequest request) {
-        return ResponseEntity.ok(bingoService.iniciarNovaPartida(request.tipo(), request.participantes()));
+        return ResponseEntity.ok(bingoService.iniciarNovaPartida(
+                request.tipo(),
+                request.regraVitoria(),
+                request.participantes()
+        ));
     }
 
     @PostMapping("/partidas/{id}/sortear")
@@ -94,4 +99,4 @@ public class BingoController {
     }
 }
 
-record NovaPartidaRequest(TipoJogo tipo, List<Long> participantes) {}
+record NovaPartidaRequest(TipoJogo tipo, RegraVitoria regraVitoria, List<Long> participantes) {}

@@ -1,3 +1,14 @@
+/**
+ * Lógica da Tela de Histórico
+ */
+
+const MAPA_REGRAS_HISTORICO = {
+    'CARTELA_CHEIA': 'Cartela Cheia',
+    'LINHA': 'Linha (5 números)',
+    'COLUNA': 'Coluna (5 números)',
+    'LINHA_OU_COLUNA': 'Linha/Coluna (5 números)'
+};
+
 document.addEventListener('DOMContentLoaded', async () => {
     const tbody = document.getElementById('tabelaHistorico');
     try {
@@ -6,7 +17,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         tbody.innerHTML = '';
         if(partidas.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="7" class="text-center text-muted">Nenhuma partida registrada.</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="9" class="text-center text-muted">Nenhuma partida registrada.</td></tr>';
             return;
         }
 
@@ -26,11 +37,14 @@ document.addEventListener('DOMContentLoaded', async () => {
                 ? p.numerosSorteados.join(', ')
                 : '-';
 
+            const regraTexto = p.regraVitoria ? (MAPA_REGRAS_HISTORICO[p.regraVitoria] || p.regraVitoria) : 'Padrão';
+
             const tr = document.createElement('tr');
             tr.innerHTML = `
                     <td class="fw-bold">${p.id}</td>
                     <td>${dataFormatada}</td>
                     <td><span class="badge bg-info text-dark">${p.tipoJogo === 'BINGO_90' ? '90 Bolas' : '75 Bolas'}</span></td>
+                    <td><span class="badge bg-dark text-warning">${regraTexto}</span></td>
                     <td>${vencedor}</td>
                     <td>${duracao}</td>
                     <td class="text-center fw-bold text-primary">${qtdPedras}</td>

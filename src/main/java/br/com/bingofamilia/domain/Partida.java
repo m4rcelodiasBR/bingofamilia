@@ -25,6 +25,9 @@ public class Partida {
     @Column(nullable = false)
     private TipoJogo tipoJogo;
 
+    @Enumerated(EnumType.STRING)
+    private RegraVitoria regraVitoria;
+
     @Column(nullable = false)
     private LocalDateTime dataInicio;
 

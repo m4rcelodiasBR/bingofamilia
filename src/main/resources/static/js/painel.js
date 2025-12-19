@@ -6,6 +6,13 @@ const elNumeroGigante = document.getElementById('numeroGigante');
 const elContador = document.getElementById('contadorTV');
 const elGrid = document.getElementById('gridTV');
 const elMsg = document.getElementById('msgUltimo');
+const elRegraTV = document.getElementById('txtRegraTV');
+const MAPA_REGRAS = {
+    'CARTELA_CHEIA': 'CARTELA CHEIA',
+    'LINHA': 'LINHA (5 NÚMEROS)',
+    'COLUNA': 'COLUNA (5 NÚMEROS)',
+    'LINHA_OU_COLUNA': 'LINHA OU COLUNA (5 NÚMEROS)'
+};
 
 let maxNumeros = 75;
 let bloqueioAnimacao = false;
@@ -18,22 +25,24 @@ let intervaloCronometro = null;
 
 document.addEventListener('DOMContentLoaded', () => {
     gerarColunasBingo(75);
-    // Avisa que estamos vivos!
     console.log("📺 TV Aberta. Pedindo sync...");
     channel.postMessage({ tipo: 'TV_CONECTADA' });
 });
 
 channel.onmessage = (event) => {
     const dados = event.data;
-    console.log("📩 TV recebeu:", dados.tipo, dados);
+    //console.log("📩 TV recebeu:", dados.tipo, dados);
 
-    // Atualiza Max Numeros
+    if (dados.partida && dados.partida.regraVitoria) {
+        const textoRegra = MAPA_REGRAS[dados.partida.regraVitoria] || dados.partida.regraVitoria;
+        if (elRegraTV) elRegraTV.textContent = textoRegra;
+    }
+
     if(dados.maxNumeros && dados.maxNumeros !== maxNumeros) {
         maxNumeros = dados.maxNumeros;
         gerarColunasBingo(maxNumeros);
     }
 
-    // Tenta pegar a data de inicio de qualquer mensagem que tenha 'partida'
     if (dados.partida && dados.partida.dataInicio) {
         if (dados.partida.dataInicio !== dataInicioPartida) {
             console.log("⏱ Data inicio recebida na TV:", dados.partida.dataInicio);

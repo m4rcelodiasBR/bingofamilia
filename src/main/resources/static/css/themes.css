@@ -64,6 +64,8 @@
     --numero-grade-marcado: #cbd5df;
     --numero-grade-bg: #0e2f59;
     --grade-ultimo-sorteado: #090c2d;
+    --box-regras: #f2cf66;
+    --box-regras-txt: #090c2d;
 }
 
 /* 2. TEMA CLARO (Clean/Corporativo) */
@@ -122,6 +124,8 @@
     --numero-grade-marcado: #121212;
     --numero-grade-bg: #F4A460;
     --grade-ultimo-sorteado: #fbc02d;
+    --box-regras: #d32f2f;
+    --box-regras-txt: #ffffff;
 }
 
 /* 3. TEMA ESCURO (Dark Mode Clássico/Alto Contraste) */
@@ -176,4 +180,6 @@
     --numero-grade-marcado: #ffc107;
     --numero-grade-bg: #343a40;
     --grade-ultimo-sorteado: #000000;
+    --box-regras: #388E3C;
+    --box-regras-txt: #ffc107;
 }

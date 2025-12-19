@@ -195,20 +195,23 @@ function selecionarTodos(marcar) {
 async function iniciarPartida() {
     const btn = document.getElementById('btnIniciar');
     const tipoJogo = document.querySelector('input[name="tipoJogo"]:checked').value;
+    const regraVitoria = document.getElementById('selectRegra').value;
     const checkboxes = document.querySelectorAll('.check-participante:checked');
     const participantesIds = Array.from(checkboxes).map(ck => Number(ck.value));
 
-    if (participantesIds.length === 0) {
-        alert("Selecione pelo menos 1 jogador para iniciar!");
+    if (participantesIds.length < 2) {
+        alert("Selecione pelo menos 2 jogadores para iniciar!");
         return;
     }
 
     btn.disabled = true;
+    const textoOriginal = btn.textContent;
     btn.textContent = "Iniciando...";
 
     try {
         const payload = {
             tipo: tipoJogo,
+            regraVitoria: regraVitoria,
             participantes: participantesIds
         };
 
@@ -225,13 +228,13 @@ async function iniciarPartida() {
             const erro = await response.json();
             alert("Erro ao iniciar: " + (erro.message || "Desconhecido"));
             btn.disabled = false;
-            btn.textContent = "🚀 INICIAR PARTIDA";
+            btn.textContent = textoOriginal;
         }
 
     } catch (e) {
         console.error(e);
-        alert("Erro de conexão.");
+        alert("Erro de conexão com o servidor.");
         btn.disabled = false;
-        btn.textContent = "🚀 INICIAR PARTIDA";
+        btn.textContent = textoOriginal;
     }
 }

@@ -1,8 +1,12 @@
 .coluna-numeros {
-    max-width: 300px;
-    font-size: 0.85rem;
-    line-height: 1.2;
+    max-width: 280px;
+    font-size: 0.8rem;
+    line-height: 1.3;
     color: var(--text-secondary);
     word-wrap: break-word;
     white-space: normal;
+    max-height: 80px;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    padding-right: 5px;
 }
